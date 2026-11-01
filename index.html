@@ -363,6 +363,55 @@
                 flex-wrap: wrap;
             }
         }
+        /* Awakening: a quiet navy stage with cyan, amethyst and antique gold. */
+        [hidden] { display: none !important; }
+        #training-setup-modal {
+            position: fixed; inset: 0; z-index: 70; overflow-y: auto;
+            overscroll-behavior: contain; background: #030712; color: #e4eff9;
+            padding: calc(28px + env(safe-area-inset-top, 0px)) max(18px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-left, 0px));
+        }
+        .awakening-shell { position: relative; max-width: 480px; margin: 0 auto; isolation: isolate; }
+        .awakening-brand { display: flex; align-items: center; justify-content: center; gap: 16px; color: #d9b97c; font-family: 'Orbitron', sans-serif; font-size: 11px; letter-spacing: .35em; padding: 8px 0 20px; }
+        .awakening-brand span { height: 1px; width: 36px; background: linear-gradient(90deg, transparent, #a88952); }
+        .awakening-brand span:last-child { transform: rotate(180deg); }
+        .awakening-name-step { position: relative; padding-top: clamp(260px, 46svh, 470px); }
+        .awakening-deity { position: absolute; z-index: -1; top: -30px; left: -18px; width: calc(100% + 36px); height: calc(100% + 30px); object-fit: cover; object-position: center 28%; mask-image: linear-gradient(#000 65%, transparent 100%); -webkit-mask-image: linear-gradient(#000 65%, transparent 100%); opacity: .95; }
+        .awakening-name-controls { position: relative; padding: 30px 4px 0; background: linear-gradient(transparent, #030712 65%); }
+        .awakening-name-controls h2, .awakening-split-heading h2 { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: clamp(32px, 8vw, 42px); line-height: 1.1; text-align: center; color: #65e7ed; letter-spacing: .01em; margin: 0; }
+        .awakening-divider { display: flex; align-items: center; justify-content: center; gap: 16px; color: #d9b97c; margin: 14px auto 20px; }
+        .awakening-divider::before, .awakening-divider::after { content: ''; width: 64px; height: 1px; background: linear-gradient(90deg, transparent, #8c7145); }
+        .awakening-divider::after { transform: rotate(180deg); }
+        .awakening-input { width: 100%; min-height: 56px; padding: 14px 18px; font-size: 18px; color: #effdff; background: #050d1bec; border: 1px solid #3ec9d4; border-radius: 10px; outline: none; font-family: 'Rajdhani', sans-serif; }
+        .awakening-input::placeholder { color: #7890a8; }
+        .awakening-input:focus { border-color: #a1f7fb; box-shadow: 0 0 0 3px #31d6e41c; }
+        .awakening-actions { padding: 0 4px; }
+        .awakening-primary { width: 100%; min-height: 54px; display: flex; align-items: center; justify-content: center; gap: 22px; border: 1px solid #6de9ef; border-radius: 10px; background: linear-gradient(135deg, #54e0e9, #22b9d1); color: #03202d; font-family: 'Orbitron', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .1em; box-shadow: 0 6px 30px #22c3d423; cursor: pointer; }
+        .awakening-primary:hover { filter: brightness(1.08); }
+        .awakening-primary:active { transform: translateY(1px); }
+        .awakening-primary:focus-visible, .awakening-secondary:focus-visible { outline: 2px solid #e9d49e; outline-offset: 4px; }
+        .awakening-secondary { display: block; margin: 14px auto 0; padding: 6px 18px; color: #99b0c8; font-size: 15px; }
+        .awakening-error { min-height: 20px; margin: 10px 4px; color: #fda4af; font-size: 15px; text-align: center; }
+        .awakening-split-heading { padding: 10px 0 24px; text-align: center; }
+        .awakening-split-heading p { margin-top: 9px; color: #94a9bf; font-size: 17px; }
+        .split-options { display: grid; gap: 16px; margin: 0; padding: 0; border: 0; }
+        .split-card { position: relative; display: block; cursor: pointer; }
+        .split-card input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+        .split-card-content { position: relative; display: block; overflow: hidden; border: 1px solid #29384d; border-radius: 13px; background: linear-gradient(145deg, #0c1729, #040a15); transition: border-color .18s, box-shadow .18s; }
+        .split-card input:checked + .split-card-content { border-color: var(--card-accent); box-shadow: 0 0 0 1px var(--card-accent), 0 8px 26px #0005; }
+        .split-card input:focus-visible + .split-card-content { outline: 2px solid #fff; outline-offset: 4px; }
+        .split-art { display: block; height: 138px; overflow: hidden; border-bottom: 1px solid #ffffff0a; }
+        .split-art svg { display: block; width: 100%; height: 100%; }
+        .split-caption { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 13px 16px 16px; text-align: center; }
+        .split-caption strong { color: #e7f0fb; font-size: 22px; font-weight: 600; line-height: 1.15; }
+        .split-caption > span { font-size: 14px; color: #8fa5bd; }
+        .split-caption small { color: var(--card-accent); font-size: 13px; margin-top: 4px; font-family: 'Share Tech Mono', monospace; }
+        .split-check { position: absolute; right: 12px; top: 12px; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--card-accent); background: #030712; color: var(--card-accent); opacity: 0; }
+        .split-card input:checked + .split-card-content .split-check { opacity: 1; }
+        .daily-quest-completed { min-height: 55svh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px; text-align: center; padding: 32px 20px; }
+        .daily-completed-seal { display: grid; place-items: center; width: 88px; height: 88px; font-size: 38px; color: #a1f1ef; border-radius: 50%; border: 1px solid #4ecaca80; box-shadow: 0 0 40px #36d6e51a, inset 0 0 24px #36d6e510; }
+        .daily-quest-completed h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(18px, 5vw, 25px); line-height: 1.7; color: #b2eef0; letter-spacing: .05em; max-width: 330px; }
+        @media (prefers-reduced-motion: reduce) { .split-card-content { transition: none; } }
+
     </style>
 </head>
 <body class="antialiased selection:bg-cyan-500 selection:text-slate-950">
@@ -473,24 +522,29 @@
         </div>
     </header>
 
-    <div id="training-setup-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="training-setup-title" style="background:#030712; overflow-y:auto; padding:calc(24px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); overscroll-behavior:contain;">
-        <form onsubmit="completeTrainingSetup(event)" class="system-box max-w-lg mx-auto p-5 space-y-4">
-            <p class="font-mono-tech text-cyan-300 text-xs">THE SYSTEM // DEIN TRAINING</p>
-            <h2 id="training-setup-title" class="font-orbitron text-xl text-white">Willkommen im System</h2>
-            <div id="training-name-field">
-                <label for="training-setup-name" class="block mb-2 text-cyan-200">Wie heißt du?</label>
-                <input id="training-setup-name" maxlength="40" autocomplete="given-name" placeholder="Dein Name" class="sys-input p-3 w-full text-left">
+    <div id="training-setup-modal" class="hidden" role="dialog" aria-modal="true" aria-labelledby="training-setup-title">
+        <form onsubmit="completeTrainingSetup(event)" class="awakening-shell">
+            <div class="awakening-brand" aria-hidden="true"><span></span> THE SYSTEM <span></span></div>
+            <div id="training-name-field" class="awakening-name-step">
+                <img src="assets/awakening-deity-v6.png" class="awakening-deity" alt="Monumentale Steingottheit mit cyanleuchtenden Augen in einem dunklen Tempel" width="1024" height="1536" fetchpriority="high">
+                <div class="awakening-name-controls">
+                    <h2 id="training-setup-title">Wie heißt du?</h2>
+                    <div class="awakening-divider" aria-hidden="true">✧</div>
+                    <label for="training-setup-name" class="sr-only">Dein Name</label>
+                    <input id="training-setup-name" maxlength="40" autocomplete="given-name" enterkeyhint="next" placeholder="Dein Name" class="awakening-input">
+                </div>
             </div>
-            <fieldset class="space-y-3">
-                <legend class="mb-2 text-cyan-200">Wie möchtest du trainieren?</legend>
-                <label class="block border border-cyan-500/40 rounded p-3 cursor-pointer"><input type="radio" name="training-choice" value="fullbody" checked> <strong>Ganzkörper</strong><span class="block text-sm text-slate-300 mt-1">2–3 Tage pro Woche · A und B abwechselnd · ideal zum Einstieg</span></label>
-                <label class="block border border-cyan-500/40 rounded p-3 cursor-pointer"><input type="radio" name="training-choice" value="upperlower"> <strong>Oberkörper / Unterkörper</strong><span class="block text-sm text-slate-300 mt-1">4 Tage pro Woche · Oberkörper A / Unterkörper A / Oberkörper B / Unterkörper B</span></label>
-                <label class="block border border-cyan-500/40 rounded p-3 cursor-pointer"><input type="radio" name="training-choice" value="ppl"> <strong>Push / Pull / Beine</strong><span class="block text-sm text-slate-300 mt-1">Für Erfahrene mit 5–6 Trainingstagen · Push / Pull / Beine mit regelmäßigen Ruhetagen</span></label>
-            </fieldset>
-            <p class="text-sm text-slate-400">Deine Gewichte, angepassten Übungen und Satz-Haken werden je Trainingstag gespeichert. Chronik, Level und Rekorde bleiben beim Wechsel erhalten. Ein bisheriger Plan bleibt als eigener Trainingstag unter Ganzkörper verfügbar.</p>
-            <p id="training-setup-error" class="text-rose-300" role="alert"></p>
-            <button id="training-setup-submit" type="submit" class="sys-btn rounded p-3 w-full font-orbitron">SYSTEM STARTEN</button>
-            <button id="training-setup-cancel" type="button" onclick="closeTrainingSetup()" class="w-full text-slate-300 p-2">Abbrechen</button>
+            <div id="training-split-step" hidden>
+                <div class="awakening-split-heading"><h2 id="training-split-title">Wähle deinen Weg</h2><p>Dein Training. Dein Rhythmus.</p></div>
+                <fieldset class="split-options"><legend class="sr-only">Trainingsplan auswählen</legend><label class="split-card" style="--card-accent:#51dcea"><input type="radio" name="training-choice" value="fullbody" checked><span class="split-card-content"><span class="split-art"><svg viewBox="0 0 360 212" aria-hidden="true" focusable="false"><defs><radialGradient id="fullbody-glow"><stop stop-color="#51dcea" stop-opacity=".17"/><stop offset="1" stop-color="#030712" stop-opacity="0"/></radialGradient></defs><ellipse cx="180" cy="105" rx="170" ry="110" fill="url(#fullbody-glow)"/><g stroke="#51dcea" opacity=".16" fill="none"><path d="M35 186V80Q180 -55 325 80V186 M55 186V90Q180 -24 305 90V186"/><ellipse cx="180" cy="184" rx="110" ry="8"/></g><g transform="translate(180 10)" stroke-linejoin="round"><g fill="#142238" stroke="#425874" stroke-width="1.4"><circle cy="14" r="12"/><path d="M-20 34 Q0 25 20 34 L16 75 Q0 84 -16 75Z"/><path d="M-24 38L-31 75 -39 104 -32 107 -20 79 -14 49Z"/><path d="M24 38L31 75 39 104 32 107 20 79 14 49Z"/><path d="M-16 80L-19 124 -15 169 -5 169 -2 124 0 96 2 124 5 169 15 169 19 124 16 80Z"/></g><g fill="#51dcea" fill-opacity=".40" stroke="#51dcea" stroke-width="1.5"><path d="M-20 34 Q0 25 20 34 L16 75 Q0 84 -16 75Z"/><path d="M-24 38L-31 75 -39 104 -32 107 -20 79 -14 49Z"/><path d="M24 38L31 75 39 104 32 107 20 79 14 49Z"/><path d="M-16 80L-19 124 -15 169 -5 169 -2 124 0 96 2 124 5 169 15 169 19 124 16 80Z"/></g><path d="M0 39V74 M-14 51L0 55 14 51 M-12 65L0 68 12 65" fill="none" stroke="#51dcea" opacity=".5"/></g></svg></span><span class="split-caption"><strong>Ganzkörper</strong><span>Ganzer Körper pro Einheit</span><small>2–3 Tage pro Woche</small></span><span class="split-check" aria-hidden="true">✓</span></span></label>
+<label class="split-card" style="--card-accent:#b791f7"><input type="radio" name="training-choice" value="upperlower" ><span class="split-card-content"><span class="split-art"><svg viewBox="0 0 360 212" aria-hidden="true" focusable="false"><defs><radialGradient id="upperlower-glow"><stop stop-color="#b791f7" stop-opacity=".17"/><stop offset="1" stop-color="#030712" stop-opacity="0"/></radialGradient></defs><ellipse cx="180" cy="105" rx="170" ry="110" fill="url(#upperlower-glow)"/><g stroke="#b791f7" opacity=".16" fill="none"><path d="M35 186V80Q180 -55 325 80V186 M55 186V90Q180 -24 305 90V186"/><ellipse cx="180" cy="184" rx="110" ry="8"/></g><g transform="translate(140 10)" stroke-linejoin="round"><g fill="#142238" stroke="#425874" stroke-width="1.4"><circle cy="14" r="12"/><path d="M-20 34 Q0 25 20 34 L16 75 Q0 84 -16 75Z"/><path d="M-24 38L-31 75 -39 104 -32 107 -20 79 -14 49Z"/><path d="M24 38L31 75 39 104 32 107 20 79 14 49Z"/><path d="M-16 80L-19 124 -15 169 -5 169 -2 124 0 96 2 124 5 169 15 169 19 124 16 80Z"/></g><g fill="#b791f7" fill-opacity=".40" stroke="#b791f7" stroke-width="1.5"><path d="M-20 34 Q0 25 20 34 L16 75 Q0 84 -16 75Z"/><path d="M-24 38L-31 75 -39 104 -32 107 -20 79 -14 49Z"/><path d="M24 38L31 75 39 104 32 107 20 79 14 49Z"/></g><path d="M0 39V74 M-14 51L0 55 14 51 M-12 65L0 68 12 65" fill="none" stroke="#b791f7" opacity=".5"/></g><g transform="translate(220 10)" stroke-linejoin="round"><g fill="#142238" stroke="#425874" stroke-width="1.4"><circle cy="14" r="12"/><path d="M-20 34 Q0 25 20 34 L16 75 Q0 84 -16 75Z"/><path d="M-24 38L-31 75 -39 104 -32 107 -20 79 -14 49Z"/><path d="M24 38L31 75 39 104 32 107 20 79 14 49Z"/><path d="M-16 80L-19 124 -15 169 -5 169 -2 124 0 96 2 124 5 169 15 169 19 124 16 80Z"/></g><g fill="#b791f7" fill-opacity=".40" stroke="#b791f7" stroke-width="1.5"><path d="M-16 80L-19 124 -15 169 -5 169 -2 124 0 96 2 124 5 169 15 169 19 124 16 80Z"/></g><path d="M0 39V74 M-14 51L0 55 14 51 M-12 65L0 68 12 65" fill="none" stroke="#b791f7" opacity=".5"/></g></svg></span><span class="split-caption"><strong>Oberkörper / Unterkörper</strong><span>Zwei Bereiche. Im Wechsel.</span><small>4 Tage pro Woche</small></span><span class="split-check" aria-hidden="true">✓</span></span></label>
+<label class="split-card" style="--card-accent:#e3bb72"><input type="radio" name="training-choice" value="ppl" ><span class="split-card-content"><span class="split-art"><svg viewBox="0 0 360 212" aria-hidden="true" focusable="false"><defs><radialGradient id="ppl-glow"><stop stop-color="#e3bb72" stop-opacity=".17"/><stop offset="1" stop-color="#030712" stop-opacity="0"/></radialGradient></defs><ellipse cx="180" cy="105" rx="170" ry="110" fill="url(#ppl-glow)"/><g stroke="#e3bb72" opacity=".16" fill="none"><path d="M35 186V80Q180 -55 325 80V186 M55 186V90Q180 -24 305 90V186"/><ellipse cx="180" cy="184" rx="110" ry="8"/></g><g transform="translate(105 10)" stroke-linejoin="round"><g fill="#142238" stroke="#425874" stroke-width="1.4"><circle cy="14" r="12"/><path d="M-20 34 Q0 25 20 34 L16 75 Q0 84 -16 75Z"/><path d="M-24 38L-31 75 -39 104 -32 107 -20 79 -14 49Z"/><path d="M24 38L31 75 39 104 32 107 20 79 14 49Z"/><path d="M-16 80L-19 124 -15 169 -5 169 -2 124 0 96 2 124 5 169 15 169 19 124 16 80Z"/></g><g fill="#e3bb72" fill-opacity=".40" stroke="#e3bb72" stroke-width="1.5"><path d="M-19 35Q-8 29 -2 35L-2 51Q-13 55 -19 47Z M19 35Q8 29 2 35L2 51Q13 55 19 47Z M-23 36L-28 55 -21 58 -16 40Z M23 36L28 55 21 58 16 40Z M-27 59L-33 76 -28 78 -22 61Z M27 59L33 76 28 78 22 61Z"/></g><path d="M0 39V74 M-14 51L0 55 14 51 M-12 65L0 68 12 65" fill="none" stroke="#e3bb72" opacity=".5"/></g><g transform="translate(180 10)" stroke-linejoin="round"><g fill="#142238" stroke="#425874" stroke-width="1.4"><circle cy="14" r="12"/><path d="M-20 34 Q0 25 20 34 L16 75 Q0 84 -16 75Z"/><path d="M-24 38L-31 75 -39 104 -32 107 -20 79 -14 49Z"/><path d="M24 38L31 75 39 104 32 107 20 79 14 49Z"/><path d="M-16 80L-19 124 -15 169 -5 169 -2 124 0 96 2 124 5 169 15 169 19 124 16 80Z"/></g><g fill="#e3bb72" fill-opacity=".40" stroke="#e3bb72" stroke-width="1.5"><path d="M-18 35L0 31 18 35 12 52 0 67 -12 52Z M-16 51L-10 72 -3 76 -3 60Z M16 51L10 72 3 76 3 60Z M-23 46L-29 64 -24 67 -18 49Z M23 46L29 64 24 67 18 49Z"/></g><path d="M0 39V74 M-14 51L0 55 14 51 M-12 65L0 68 12 65" fill="none" stroke="#e3bb72" opacity=".5"/></g><g transform="translate(255 10)" stroke-linejoin="round"><g fill="#142238" stroke="#425874" stroke-width="1.4"><circle cy="14" r="12"/><path d="M-20 34 Q0 25 20 34 L16 75 Q0 84 -16 75Z"/><path d="M-24 38L-31 75 -39 104 -32 107 -20 79 -14 49Z"/><path d="M24 38L31 75 39 104 32 107 20 79 14 49Z"/><path d="M-16 80L-19 124 -15 169 -5 169 -2 124 0 96 2 124 5 169 15 169 19 124 16 80Z"/></g><g fill="#e3bb72" fill-opacity=".40" stroke="#e3bb72" stroke-width="1.5"><path d="M-16 80L-19 124 -15 169 -5 169 -2 124 0 96 2 124 5 169 15 169 19 124 16 80Z"/></g><path d="M0 39V74 M-14 51L0 55 14 51 M-12 65L0 68 12 65" fill="none" stroke="#e3bb72" opacity=".5"/></g><g fill="#d8c9a5" font-size="10" text-anchor="middle" font-family="sans-serif"><text x="105" y="199">PUSH</text><text x="180" y="199">PULL</text><text x="255" y="199">BEINE</text></g></svg></span><span class="split-caption"><strong>Push / Pull / Beine</strong><span>Drücken. Ziehen. Beine.</span><small>5–6 Tage pro Woche</small></span><span class="split-check" aria-hidden="true">✓</span></span></label></fieldset>
+            </div>
+            <p id="training-setup-error" class="awakening-error" role="alert"></p>
+            <div class="awakening-actions"><button id="training-setup-submit" type="submit" class="awakening-primary">WEITER <span aria-hidden="true">→</span></button>
+                <button id="training-setup-back" type="button" onclick="showTrainingSetupStep('name')" class="awakening-secondary" hidden>Zurück</button>
+                <button id="training-setup-cancel" type="button" onclick="closeTrainingSetup()" class="awakening-secondary" hidden>Abbrechen</button>
+            </div>
         </form>
     </div>
 
@@ -501,6 +555,11 @@
              TAB 1: QUEST (ACTIVE WORKOUT PLAN)
              ========================================== -->
         <section id="tab-quest" class="space-y-4">
+            <div id="daily-quest-completed" class="daily-quest-completed" hidden role="status" aria-live="polite">
+                <div class="daily-completed-seal" aria-hidden="true">✓</div>
+                <h1>Tägliche Quest Abgeschlossen</h1>
+            </div>
+            <div id="quest-workout-content" class="space-y-4">
             
             <!-- Daily Quest Banner -->
             <div class="system-box p-4">
@@ -645,6 +704,7 @@
                         Standard-Plan wiederherstellen
                     </button>
                 </div>
+            </div>
             </div>
         </section>
 
@@ -1530,6 +1590,7 @@
                     exercises: cloneTrainingValue(appState.exercises), warmup: cloneTrainingValue(appState.warmup)
                 };
             }
+            if (!appState.dailyQuest || typeof appState.dailyQuest !== 'object') appState.dailyQuest = {};
             appState.records = appState.records || {};
             appState.history = appState.history || [];
             appState.bodyweightLogs = appState.bodyweightLogs || [];
@@ -1556,6 +1617,7 @@
             select.value = appState.trainingDay;
         }
         function activateTrainingSession(planId, dayId) {
+            if (isDailyQuestCompleted()) return;
             snapshotTrainingSession();
             appState.trainingPlan = planId;
             appState.trainingDay = dayId;
@@ -1573,22 +1635,34 @@
             if (dayId !== appState.trainingDay) activateTrainingSession(appState.trainingPlan, dayId);
         }
         let trainingSetupIsInitial = false;
+        let trainingSetupStep = 'name';
         let trainingSetupPreviousFocus = null;
+        function showTrainingSetupStep(step) {
+            trainingSetupStep = step;
+            const isName = step === 'name';
+            document.getElementById('training-name-field').hidden = !isName;
+            document.getElementById('training-split-step').hidden = isName;
+            document.getElementById('training-setup-name').required = isName;
+            document.getElementById('training-setup-modal').setAttribute('aria-labelledby', isName ? 'training-setup-title' : 'training-split-title');
+            document.getElementById('training-setup-submit').innerHTML = isName ? 'WEITER <span aria-hidden="true">→</span>' : trainingSetupIsInitial ? 'TRAINING STARTEN <span aria-hidden="true">→</span>' : 'PLAN ÜBERNEHMEN <span aria-hidden="true">→</span>';
+            document.getElementById('training-setup-back').hidden = isName || !trainingSetupIsInitial;
+            document.getElementById('training-setup-cancel').hidden = trainingSetupIsInitial;
+            document.getElementById('training-setup-error').textContent = '';
+            document.getElementById('training-setup-modal').scrollTop = 0;
+            if (!isName) document.querySelector('input[name="training-choice"]:checked').focus({ preventScroll: true });
+        }
         function openTrainingSetup(initial = false) {
+            if (!initial && isDailyQuestCompleted()) return;
             trainingSetupIsInitial = initial;
             trainingSetupPreviousFocus = document.activeElement;
             const name = document.getElementById('training-setup-name');
             name.value = appState.player.name === 'SUNG JIN-WOO' ? '' : appState.player.name;
-            name.required = initial;
-            document.getElementById('training-name-field').hidden = !initial;
             document.querySelector(`input[name="training-choice"][value="${appState.trainingPlan}"]`).checked = true;
-            document.getElementById('training-setup-title').textContent = initial ? 'Willkommen im System' : 'Trainingsplan wählen';
-            document.getElementById('training-setup-submit').textContent = initial ? 'SYSTEM STARTEN' : 'PLAN ÜBERNEHMEN';
-            document.getElementById('training-setup-cancel').hidden = initial;
-            document.getElementById('training-setup-error').textContent = '';
             document.getElementById('training-setup-modal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
-            (initial ? name : document.querySelector('input[name="training-choice"]:checked')).focus({ preventScroll: true });
+            showTrainingSetupStep(initial ? 'name' : 'split');
+            // Do not summon the iPhone keyboard before the illustration is visible.
+            if (initial) document.getElementById('training-setup-submit').focus({ preventScroll: true });
         }
         function closeTrainingSetup() {
             if (trainingSetupIsInitial) return;
@@ -1601,6 +1675,12 @@
             const name = document.getElementById('training-setup-name').value.trim();
             if (trainingSetupIsInitial && !name) {
                 document.getElementById('training-setup-error').textContent = 'Bitte gib deinen Namen ein.';
+                document.getElementById('training-setup-name').focus();
+                return;
+            }
+            if (trainingSetupIsInitial && trainingSetupStep === 'name') {
+                document.getElementById('training-setup-name').blur();
+                showTrainingSetupStep('split');
                 return;
             }
             const planId = document.querySelector('input[name="training-choice"]:checked').value;
@@ -1608,7 +1688,6 @@
             if (firstSetup) appState.player.name = name;
             appState.onboardingComplete = true;
             if (firstSetup) {
-                // Preserve the previous workout separately; start with the new template.
                 appState.trainingPlan = planId;
                 appState.trainingDay = 'a';
                 const saved = appState.planSessions[`${planId}:a`];
@@ -1622,6 +1701,7 @@
             trainingSetupIsInitial = false;
             closeTrainingSetup();
         }
+
         document.addEventListener('keydown', event => {
             const modal = document.getElementById('training-setup-modal');
             if (!modal || modal.classList.contains('hidden')) return;
@@ -1635,7 +1715,51 @@
         });
 
 
+        function localTrainingDate(date = new Date()) {
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        }
+        function isDailyQuestCompleted() {
+            return appState.dailyQuest?.completedOn === localTrainingDate();
+        }
+        function nextTrainingDay(planId, dayId) {
+            const days = Object.keys(TRAINING_PLANS[planId].days);
+            return days[(days.indexOf(dayId) + 1) % days.length];
+        }
+        function advanceDailyQuest() {
+            const pending = appState.dailyQuest?.pending;
+            if (!pending || isDailyQuestCompleted()) return false;
+            if (!TRAINING_PLANS[pending.planId]?.days[pending.dayId]) {
+                appState.dailyQuest.pending = null;
+                saveState();
+                return false;
+            }
+            snapshotTrainingSession();
+            appState.trainingPlan = pending.planId;
+            appState.trainingDay = pending.dayId;
+            const saved = appState.planSessions[`${pending.planId}:${pending.dayId}`];
+            appState.exercises = saved ? cloneTrainingValue(saved.exercises) : buildTrainingDay(pending.planId, pending.dayId);
+            appState.exercises.forEach(ex => ex.sets.forEach(set => { set.done = false; }));
+            appState.warmup = saved ? cloneTrainingValue(saved.warmup) : { ...appState.warmup };
+            appState.warmup.completed = false;
+            appState.dailyQuest.pending = null;
+            resetWarmupTimer();
+            stopRestTimer();
+            saveState();
+            return true;
+        }
+        function renderDailyQuest() {
+            const done = isDailyQuestCompleted();
+            document.getElementById('quest-workout-content').hidden = done;
+            document.getElementById('daily-quest-completed').hidden = !done;
+            document.getElementById('header-rest-bar').hidden = done;
+            if (done) document.getElementById('header-quest-pct').textContent = '100%';
+        }
+        function refreshTrainingDate() {
+            if (advanceDailyQuest()) renderAll();
+        }
+
         let appState = {
+            dailyQuest: {},
             onboardingComplete: false,
             trainingPlan: 'fullbody',
             trainingDay: 'a',
@@ -2046,6 +2170,7 @@
         }
 
         function toggleWarmupTimer() {
+            if (isDailyQuestCompleted()) return;
             const btn = document.getElementById('warmup-start-btn');
             if (warmupTimerRunning) {
                 clearInterval(warmupTimerInterval);
@@ -2080,6 +2205,7 @@
         }
 
         function toggleWarmupComplete() {
+            if (isDailyQuestCompleted()) return;
             appState.warmup.completed = !appState.warmup.completed;
             if (appState.warmup.completed) {
                 playSystemSound('set');
@@ -2279,6 +2405,7 @@
         }
 
         function toggleSetDone(exIndex, setIndex) {
+            if (isDailyQuestCompleted()) return;
             const ex = appState.exercises[exIndex];
             const set = ex.sets[setIndex];
             if (!set.done && ex.loadUnselected && !(set.weight > 0)) {
@@ -2460,6 +2587,7 @@
         }
 
         function finishWorkoutSession() {
+            if (isDailyQuestCompleted()) return;
             const m = calculateCurrentWorkoutMetrics();
             if (m.doneSets === 0 && !appState.warmup.completed) {
                 showSystemToast('Bitte hake mindestens das Aufwärmen oder einen Satz ab!');
@@ -2508,6 +2636,12 @@
             appState.player.stats.vit += 2;
             appState.player.stats.int += 1;
 
+            // Persist the daily completion before awarding rewards to prevent double submissions.
+            appState.dailyQuest = {
+                completedOn: localTrainingDate(),
+                pending: { planId: appState.trainingPlan, dayId: nextTrainingDay(appState.trainingPlan, appState.trainingDay) }
+            };
+
             // Bonus Quest Clear XP
             const clearBonusXP = 150;
             awardXP(clearBonusXP, 'Tages-Quest Abschlussbonus');
@@ -2516,6 +2650,7 @@
             appState.warmup.completed = false;
             appState.exercises.forEach(ex => ex.sets.forEach(s => (s.done = false)));
             resetWarmupTimer();
+            stopRestTimer();
             saveState();
 
             playSystemSound('questClear');
@@ -2532,6 +2667,7 @@
         }
 
         function resetTodayCheckmarks() {
+            if (isDailyQuestCompleted()) return;
             appState.warmup.completed = false;
             appState.exercises.forEach(ex => ex.sets.forEach(s => (s.done = false)));
             saveState();
@@ -2540,6 +2676,7 @@
         }
 
         function restoreDefaultPlan() {
+            if (isDailyQuestCompleted()) return;
             if (!confirm('Aktuellen Trainingstag zurücksetzen? Eigene Änderungen und heutige Haken dieses Tages werden ersetzt. Chronik und Rekorde bleiben erhalten.')) return;
             if (appState.trainingDay === 'legacy') appState.trainingDay = 'a';
             appState.exercises = buildTrainingDay(appState.trainingPlan, appState.trainingDay);
@@ -2971,19 +3108,26 @@
         }
 
         function renderAll() {
+            advanceDailyQuest();
             renderTrainingPlan();
             updateSoundUI();
             renderHeaderAndStats();
             renderWarmupUI();
             renderExercises();
             renderHistory();
+            renderDailyQuest();
         }
 
         window.onload = function () {
             loadState();
             renderAll();
             if (!appState.onboardingComplete) openTrainingSetup(true);
+            setInterval(refreshTrainingDate, 30000);
         };
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) refreshTrainingDate();
+        });
+        window.addEventListener('focus', refreshTrainingDate);
     </script>
 </body>
 </html>
