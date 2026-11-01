@@ -9,6 +9,8 @@
     <meta name="theme-color" content="#040814">
     <title>THE SYSTEM // Training des Spielers</title>
 
+    <link rel="preload" href="assets/fonts/CormorantGaramond-v7.ttf" as="font" type="font/ttf" crossorigin>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -412,6 +414,89 @@
         .daily-quest-completed h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(18px, 5vw, 25px); line-height: 1.7; color: #b2eef0; letter-spacing: .05em; max-width: 330px; }
         @media (prefers-reduced-motion: reduce) { .split-card-content { transition: none; } }
 
+        /* Version 0007: carry the preview's temple, serif type and restrained light into the app. */
+        @font-face {
+            font-family: 'System Cormorant';
+            src: url('assets/fonts/CormorantGaramond-v7.ttf') format('truetype');
+            font-weight: 300 700; font-style: normal; font-display: swap;
+        }
+        :root {
+            --sys-cyan: #65dce5; --sys-blue: #369aad; --sys-purple: #b791f7;
+            --sys-gold: #dfbb7a; --sys-bg: #030712; --sys-panel: #081222;
+            --font-display: 'System Cormorant', Georgia, 'Times New Roman', serif;
+        }
+        body {
+            background-image: radial-gradient(ellipse at 50% 0%, #1b3c4b38, transparent 48%), radial-gradient(ellipse at 95% 75%, #3c245324, transparent 55%), linear-gradient(#030712, #060d19 55%, #030712);
+            color: #dce8f3;
+        }
+        body::before { display: none; }
+        h1.font-orbitron, h2.font-orbitron, h3.font-orbitron {
+            font-family: var(--font-display); font-weight: 600; letter-spacing: .025em;
+            text-shadow: none; line-height: 1.25;
+        }
+        h1.font-orbitron { font-size: 27px; }
+        h2.font-orbitron { font-size: 24px; }
+        h3.font-orbitron { font-size: 21px; }
+        .system-box {
+            background: linear-gradient(145deg, #0a1526f5, #050c18f5);
+            border: 1px solid #64a3b33d; border-radius: 14px;
+            box-shadow: 0 8px 28px #00000029, inset 0 1px 0 #ffffff04;
+            -webkit-backdrop-filter: none; backdrop-filter: none;
+        }
+        .system-box::before, .system-box::after { display: none; }
+        .system-box-purple { border-color: #b791f74a; box-shadow: 0 8px 28px #00000029; }
+        .text-glow-cyan, .text-glow-purple, .text-glow-gold { text-shadow: none; }
+        .sys-input { border-color: #4d788855; border-radius: 8px; background: #030a15; }
+        .sys-input:focus { border-color: #69dae3; box-shadow: 0 0 0 2px #69dae319; }
+        .sys-btn { border-color: #6cd0d95c; border-radius: 8px; background: linear-gradient(145deg, #17404a80, #0b243880); text-shadow: none; color: #c8edf0; }
+        .stepper-capsule { border-radius: 8px; border-color: #557b914d; background: #030a15; }
+        .stepper-btn { background: #0d1a2b; color: #9adddf; }
+        .stepper-input { border-color: #557b9133; }
+        .quest-finish-btn {
+            border: 1px solid #6bdee5; border-radius: 11px;
+            background: linear-gradient(135deg, #5bdae3, #26a9bd);
+            color: #042431; box-shadow: 0 7px 25px #26b5c21a;
+            font-family: var(--font-display); font-size: 18px; letter-spacing: .08em;
+        }
+        .quest-finish-btn::before, .quest-finish-btn::after { display: none; }
+        .quest-finish-btn:active { background: #50cbd6; box-shadow: none; }
+        .quest-eyebrow { display: flex; align-items: center; justify-content: center; gap: 15px; padding: 0 0 17px; color: #c6aa79; font-family: var(--font-display); font-size: 12px; letter-spacing: .19em; }
+        .quest-eyebrow span { font-size: 15px; color: #dfbb7a; }
+        #training-plan-label { font-family: var(--font-display); font-size: 27px; font-weight: 600; letter-spacing: .01em; }
+        #training-day-select { background: #050d1b; color: #c9e9ed; border-color: #51828d55; min-height: 43px; }
+        #system-header { border-bottom-color: #74939833; box-shadow: 0 6px 18px #00000020; }
+        #header-player-name { font-family: var(--font-display); font-size: 16px; font-weight: 600; letter-spacing: .07em; color: #b1e8eb; }
+        #header-level, #header-quest-pct { text-shadow: none; }
+        body > nav { background: #030914fa; -webkit-backdrop-filter: none; backdrop-filter: none; border-color: #72899740; }
+        body > nav button { min-height: 56px; }
+        .awakening-brand { font-family: var(--font-display); font-weight: 600; font-size: 12px; letter-spacing: .38em; }
+        .awakening-name-controls h2, .awakening-split-heading h2 {
+            font-family: var(--font-display); font-weight: 600; font-size: clamp(35px, 9vw, 46px);
+            line-height: 1.12; color: #68e3e8; letter-spacing: -.015em;
+        }
+        .awakening-split-heading { padding-top: 7px; padding-bottom: 25px; }
+        .awakening-split-heading p { font-family: var(--font-display); font-size: 20px; color: #a4b6ca; margin-top: 10px; }
+        .awakening-split-heading::after { content: '✧'; display: block; width: 120px; margin: 16px auto 0; color: #bd995e; font-size: 16px; background: linear-gradient(90deg, transparent, #9b7b4e77, transparent) center / 100% 1px no-repeat; }
+        .awakening-input { font-family: var(--font-display); font-size: 23px; }
+        .awakening-primary { font-family: var(--font-display); font-size: 19px; letter-spacing: .12em; font-weight: 700; }
+        .split-options { gap: 21px; }
+        .split-card-content { border-color: color-mix(in srgb, var(--card-accent) 50%, #162239); background: #060d1a; border-radius: 15px; }
+        .split-card input:checked + .split-card-content { box-shadow: 0 0 0 1px var(--card-accent), 0 8px 35px #0005; }
+        .split-art { height: auto; aspect-ratio: 3 / 2; border: 0; position: relative; }
+        .split-art img { display: block; width: 100%; height: 100%; object-fit: contain; }
+        .split-art::after { content: ''; position: absolute; inset: 85% 0 0; pointer-events: none; background: linear-gradient(transparent, #060d1a99); }
+        .split-caption { padding: 0 16px 22px; gap: 7px; position: relative; }
+        .split-caption strong { font-family: var(--font-display); font-size: clamp(25px, 7vw, 31px); font-weight: 600; line-height: 1.1; color: #edf0f7; }
+        .split-caption strong::after { content: ''; display: block; width: 80px; height: 1px; margin: 11px auto 3px; background: linear-gradient(90deg, transparent, #b68f56b3, transparent); }
+        .split-caption > span { color: #a5b6c9; font-family: var(--font-display); font-size: 18px; }
+        .split-caption small { font-family: var(--font-display); font-size: 18px; color: var(--card-accent); margin-top: 0; }
+        .daily-quest-completed h1 { font-family: var(--font-display); font-size: 35px; font-weight: 600; line-height: 1.2; letter-spacing: .01em; }
+        @media (max-width: 360px) {
+            #training-plan-label { font-size: 24px; }
+            .quest-eyebrow { font-size: 11px; gap: 9px; }
+        }
+        @supports not (color: color-mix(in srgb, white, black)) { .split-card-content { border-color: var(--card-accent); } }
+
     </style>
 </head>
 <body class="antialiased selection:bg-cyan-500 selection:text-slate-950">
@@ -536,9 +621,9 @@
             </div>
             <div id="training-split-step" hidden>
                 <div class="awakening-split-heading"><h2 id="training-split-title">Wähle deinen Weg</h2><p>Dein Training. Dein Rhythmus.</p></div>
-                <fieldset class="split-options"><legend class="sr-only">Trainingsplan auswählen</legend><label class="split-card" style="--card-accent:#51dcea"><input type="radio" name="training-choice" value="fullbody" checked><span class="split-card-content"><span class="split-art"><svg viewBox="0 0 360 212" aria-hidden="true" focusable="false"><defs><radialGradient id="fullbody-glow"><stop stop-color="#51dcea" stop-opacity=".17"/><stop offset="1" stop-color="#030712" stop-opacity="0"/></radialGradient></defs><ellipse cx="180" cy="105" rx="170" ry="110" fill="url(#fullbody-glow)"/><g stroke="#51dcea" opacity=".16" fill="none"><path d="M35 186V80Q180 -55 325 80V186 M55 186V90Q180 -24 305 90V186"/><ellipse cx="180" cy="184" rx="110" ry="8"/></g><g transform="translate(180 10)" stroke-linejoin="round"><g fill="#142238" stroke="#425874" stroke-width="1.4"><circle cy="14" r="12"/><path d="M-20 34 Q0 25 20 34 L16 75 Q0 84 -16 75Z"/><path d="M-24 38L-31 75 -39 104 -32 107 -20 79 -14 49Z"/><path d="M24 38L31 75 39 104 32 107 20 79 14 49Z"/><path d="M-16 80L-19 124 -15 169 -5 169 -2 124 0 96 2 124 5 169 15 169 19 124 16 80Z"/></g><g fill="#51dcea" fill-opacity=".40" stroke="#51dcea" stroke-width="1.5"><path d="M-20 34 Q0 25 20 34 L16 75 Q0 84 -16 75Z"/><path d="M-24 38L-31 75 -39 104 -32 107 -20 79 -14 49Z"/><path d="M24 38L31 75 39 104 32 107 20 79 14 49Z"/><path d="M-16 80L-19 124 -15 169 -5 169 -2 124 0 96 2 124 5 169 15 169 19 124 16 80Z"/></g><path d="M0 39V74 M-14 51L0 55 14 51 M-12 65L0 68 12 65" fill="none" stroke="#51dcea" opacity=".5"/></g></svg></span><span class="split-caption"><strong>Ganzkörper</strong><span>Ganzer Körper pro Einheit</span><small>2–3 Tage pro Woche</small></span><span class="split-check" aria-hidden="true">✓</span></span></label>
-<label class="split-card" style="--card-accent:#b791f7"><input type="radio" name="training-choice" value="upperlower" ><span class="split-card-content"><span class="split-art"><svg viewBox="0 0 360 212" aria-hidden="true" focusable="false"><defs><radialGradient id="upperlower-glow"><stop stop-color="#b791f7" stop-opacity=".17"/><stop offset="1" stop-color="#030712" stop-opacity="0"/></radialGradient></defs><ellipse cx="180" cy="105" rx="170" ry="110" fill="url(#upperlower-glow)"/><g stroke="#b791f7" opacity=".16" fill="none"><path d="M35 186V80Q180 -55 325 80V186 M55 186V90Q180 -24 305 90V186"/><ellipse cx="180" cy="184" rx="110" ry="8"/></g><g transform="translate(140 10)" stroke-linejoin="round"><g fill="#142238" stroke="#425874" stroke-width="1.4"><circle cy="14" r="12"/><path d="M-20 34 Q0 25 20 34 L16 75 Q0 84 -16 75Z"/><path d="M-24 38L-31 75 -39 104 -32 107 -20 79 -14 49Z"/><path d="M24 38L31 75 39 104 32 107 20 79 14 49Z"/><path d="M-16 80L-19 124 -15 169 -5 169 -2 124 0 96 2 124 5 169 15 169 19 124 16 80Z"/></g><g fill="#b791f7" fill-opacity=".40" stroke="#b791f7" stroke-width="1.5"><path d="M-20 34 Q0 25 20 34 L16 75 Q0 84 -16 75Z"/><path d="M-24 38L-31 75 -39 104 -32 107 -20 79 -14 49Z"/><path d="M24 38L31 75 39 104 32 107 20 79 14 49Z"/></g><path d="M0 39V74 M-14 51L0 55 14 51 M-12 65L0 68 12 65" fill="none" stroke="#b791f7" opacity=".5"/></g><g transform="translate(220 10)" stroke-linejoin="round"><g fill="#142238" stroke="#425874" stroke-width="1.4"><circle cy="14" r="12"/><path d="M-20 34 Q0 25 20 34 L16 75 Q0 84 -16 75Z"/><path d="M-24 38L-31 75 -39 104 -32 107 -20 79 -14 49Z"/><path d="M24 38L31 75 39 104 32 107 20 79 14 49Z"/><path d="M-16 80L-19 124 -15 169 -5 169 -2 124 0 96 2 124 5 169 15 169 19 124 16 80Z"/></g><g fill="#b791f7" fill-opacity=".40" stroke="#b791f7" stroke-width="1.5"><path d="M-16 80L-19 124 -15 169 -5 169 -2 124 0 96 2 124 5 169 15 169 19 124 16 80Z"/></g><path d="M0 39V74 M-14 51L0 55 14 51 M-12 65L0 68 12 65" fill="none" stroke="#b791f7" opacity=".5"/></g></svg></span><span class="split-caption"><strong>Oberkörper / Unterkörper</strong><span>Zwei Bereiche. Im Wechsel.</span><small>4 Tage pro Woche</small></span><span class="split-check" aria-hidden="true">✓</span></span></label>
-<label class="split-card" style="--card-accent:#e3bb72"><input type="radio" name="training-choice" value="ppl" ><span class="split-card-content"><span class="split-art"><svg viewBox="0 0 360 212" aria-hidden="true" focusable="false"><defs><radialGradient id="ppl-glow"><stop stop-color="#e3bb72" stop-opacity=".17"/><stop offset="1" stop-color="#030712" stop-opacity="0"/></radialGradient></defs><ellipse cx="180" cy="105" rx="170" ry="110" fill="url(#ppl-glow)"/><g stroke="#e3bb72" opacity=".16" fill="none"><path d="M35 186V80Q180 -55 325 80V186 M55 186V90Q180 -24 305 90V186"/><ellipse cx="180" cy="184" rx="110" ry="8"/></g><g transform="translate(105 10)" stroke-linejoin="round"><g fill="#142238" stroke="#425874" stroke-width="1.4"><circle cy="14" r="12"/><path d="M-20 34 Q0 25 20 34 L16 75 Q0 84 -16 75Z"/><path d="M-24 38L-31 75 -39 104 -32 107 -20 79 -14 49Z"/><path d="M24 38L31 75 39 104 32 107 20 79 14 49Z"/><path d="M-16 80L-19 124 -15 169 -5 169 -2 124 0 96 2 124 5 169 15 169 19 124 16 80Z"/></g><g fill="#e3bb72" fill-opacity=".40" stroke="#e3bb72" stroke-width="1.5"><path d="M-19 35Q-8 29 -2 35L-2 51Q-13 55 -19 47Z M19 35Q8 29 2 35L2 51Q13 55 19 47Z M-23 36L-28 55 -21 58 -16 40Z M23 36L28 55 21 58 16 40Z M-27 59L-33 76 -28 78 -22 61Z M27 59L33 76 28 78 22 61Z"/></g><path d="M0 39V74 M-14 51L0 55 14 51 M-12 65L0 68 12 65" fill="none" stroke="#e3bb72" opacity=".5"/></g><g transform="translate(180 10)" stroke-linejoin="round"><g fill="#142238" stroke="#425874" stroke-width="1.4"><circle cy="14" r="12"/><path d="M-20 34 Q0 25 20 34 L16 75 Q0 84 -16 75Z"/><path d="M-24 38L-31 75 -39 104 -32 107 -20 79 -14 49Z"/><path d="M24 38L31 75 39 104 32 107 20 79 14 49Z"/><path d="M-16 80L-19 124 -15 169 -5 169 -2 124 0 96 2 124 5 169 15 169 19 124 16 80Z"/></g><g fill="#e3bb72" fill-opacity=".40" stroke="#e3bb72" stroke-width="1.5"><path d="M-18 35L0 31 18 35 12 52 0 67 -12 52Z M-16 51L-10 72 -3 76 -3 60Z M16 51L10 72 3 76 3 60Z M-23 46L-29 64 -24 67 -18 49Z M23 46L29 64 24 67 18 49Z"/></g><path d="M0 39V74 M-14 51L0 55 14 51 M-12 65L0 68 12 65" fill="none" stroke="#e3bb72" opacity=".5"/></g><g transform="translate(255 10)" stroke-linejoin="round"><g fill="#142238" stroke="#425874" stroke-width="1.4"><circle cy="14" r="12"/><path d="M-20 34 Q0 25 20 34 L16 75 Q0 84 -16 75Z"/><path d="M-24 38L-31 75 -39 104 -32 107 -20 79 -14 49Z"/><path d="M24 38L31 75 39 104 32 107 20 79 14 49Z"/><path d="M-16 80L-19 124 -15 169 -5 169 -2 124 0 96 2 124 5 169 15 169 19 124 16 80Z"/></g><g fill="#e3bb72" fill-opacity=".40" stroke="#e3bb72" stroke-width="1.5"><path d="M-16 80L-19 124 -15 169 -5 169 -2 124 0 96 2 124 5 169 15 169 19 124 16 80Z"/></g><path d="M0 39V74 M-14 51L0 55 14 51 M-12 65L0 68 12 65" fill="none" stroke="#e3bb72" opacity=".5"/></g><g fill="#d8c9a5" font-size="10" text-anchor="middle" font-family="sans-serif"><text x="105" y="199">PUSH</text><text x="180" y="199">PULL</text><text x="255" y="199">BEINE</text></g></svg></span><span class="split-caption"><strong>Push / Pull / Beine</strong><span>Drücken. Ziehen. Beine.</span><small>5–6 Tage pro Woche</small></span><span class="split-check" aria-hidden="true">✓</span></span></label></fieldset>
+                <fieldset class="split-options"><legend class="sr-only">Trainingsplan auswählen</legend><label class="split-card" style="--card-accent:#51dcea"><input type="radio" name="training-choice" value="fullbody" checked><span class="split-card-content"><span class="split-art"><img src="assets/split-fullbody-v7.png" alt="Cyanleuchtende Körperfigur mit hervorgehobener gesamter Muskulatur" width="1536" height="1024" decoding="async" loading="lazy"></span><span class="split-caption"><strong>Ganzkörper</strong><span>Ganzer Körper pro Einheit</span><small>2–3 Tage pro Woche</small></span><span class="split-check" aria-hidden="true">✓</span></span></label>
+<label class="split-card" style="--card-accent:#b791f7"><input type="radio" name="training-choice" value="upperlower" ><span class="split-card-content"><span class="split-art"><img src="assets/split-upperlower-v7.png" alt="Zwei violette Körperfiguren mit getrennt hervorgehobenem Oberkörper und Unterkörper" width="1536" height="1024" decoding="async" loading="lazy"></span><span class="split-caption"><strong>Oberkörper / Unterkörper</strong><span>Zwei Bereiche. Im Wechsel.</span><small>4 Tage pro Woche</small></span><span class="split-check" aria-hidden="true">✓</span></span></label>
+<label class="split-card" style="--card-accent:#e3bb72"><input type="radio" name="training-choice" value="ppl" ><span class="split-card-content"><span class="split-art"><img src="assets/split-ppl-v7.png" alt="Drei goldene Körperfiguren für Drückmuskeln, Zugmuskeln und Beine" width="1536" height="1024" decoding="async" loading="lazy"></span><span class="split-caption"><strong>Push / Pull / Beine</strong><span>Drücken. Ziehen. Beine.</span><small>5–6 Tage pro Woche</small></span><span class="split-check" aria-hidden="true">✓</span></span></label></fieldset>
             </div>
             <p id="training-setup-error" class="awakening-error" role="alert"></p>
             <div class="awakening-actions"><button id="training-setup-submit" type="submit" class="awakening-primary">WEITER <span aria-hidden="true">→</span></button>
@@ -562,7 +647,8 @@
             <div id="quest-workout-content" class="space-y-4">
             
             <!-- Daily Quest Banner -->
-            <div class="system-box p-4">
+            <div class="system-box p-4 quest-banner">
+                <div class="quest-eyebrow" aria-hidden="true">THE SYSTEM <span>✧</span> DEIN TRAINING</div>
                 <div class="flex items-center justify-between gap-2 mb-3">
                     <h1 class="font-orbitron text-lg font-extrabold tracking-wide text-white text-glow-cyan">
                         <button type="button" onclick="openTrainingSetup(false)" class="text-left" aria-label="Trainingsplan ändern">
