@@ -540,6 +540,28 @@
         #header-rest-bar { margin-top: 4px; padding-top: 6px; }
         @media (max-width: 350px) { .hud-identity { gap: 5px; } #header-player-name { font-size: 21px; } }
 
+        /* Keep the illustration in normal flow, centered independently of the form. */
+        .awakening-name-step { padding-top: 0; }
+        .awakening-deity {
+            display: block; position: relative; z-index: 0; top: auto; left: auto;
+            width: 100%; height: clamp(230px, 44svh, 390px); margin: 0 auto;
+            object-fit: cover; object-position: 50% 23%;
+            mask-image: linear-gradient(#000 78%, transparent 100%);
+            -webkit-mask-image: linear-gradient(#000 78%, transparent 100%);
+        }
+        .awakening-name-controls { padding: 0 4px; margin-top: -6px; background: none; }
+        .awakening-error:empty { min-height: 0; margin: 10px 4px; }
+        #training-setup-modal { height: 100dvh; scroll-padding: 24px; }
+        #training-setup-modal.keyboard-open .awakening-brand { display: none; }
+        #training-setup-modal.keyboard-open .awakening-deity { height: 64px; min-height: 0; object-position: 50% 20%; opacity: .7; }
+        #training-setup-modal.keyboard-open .awakening-name-controls h2 { font-size: 28px; }
+        #training-setup-modal.keyboard-open .awakening-divider { display: none; }
+        #training-setup-modal.keyboard-open .awakening-input { margin-top: 12px; }
+        .muscle-alternative-link { display: inline-flex; align-items: center; gap: 5px; padding: 4px 7px; margin: 3px 3px 3px 0; border: 1px solid #5db9c04d; border-radius: 6px; background: #12303b55; color: #a4e2e6; cursor: pointer; }
+        .muscle-alternative-link:hover { border-color: #83dce4; color: #d9b97c; }
+        .muscle-alternative-link:focus-visible { outline: 2px solid #d9b97c; outline-offset: 2px; }
+        .muscle-target-reps { display: inline-block; margin-left: 3px; color: #92afc4; }
+
     </style>
 </head>
 <body class="antialiased selection:bg-cyan-500 selection:text-slate-950">
@@ -1017,7 +1039,7 @@
         <div class="system-box w-full max-w-md p-4 flex flex-col max-h-[88vh]">
             <!-- Modal Header -->
             <div class="flex justify-between items-center border-b border-cyan-500/30 pb-2.5 mb-3 shrink-0">
-                <h3 class="font-orbitron text-sm sm:text-base font-bold text-cyan-300 tracking-wider">ÜBUNG HINZUFÜGEN</h3>
+                <h3 id="exercise-library-title" class="font-orbitron text-sm sm:text-base font-bold text-cyan-300 tracking-wider">ÜBUNG HINZUFÜGEN</h3>
                 <button onclick="closeAddExerciseModal()" class="w-7 h-7 rounded bg-slate-900 border border-cyan-500/30 text-slate-400 hover:text-white flex items-center justify-center">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
@@ -1470,15 +1492,6 @@
                 reps: 15,
                 note: 'Saubere Dehnung zulassen und ohne Schwung zusammenführen.'
             },
-            {
-                category: 'Beine',
-                name: 'Wadenheben (Maschine / Beinpresse)',
-                muscle: 'Wadenmuskulatur',
-                targetReps: '15-20 Wdh.',
-                weight: 60,
-                reps: 15,
-                note: 'Unten tief in die Dehnung gehen, oben maximal auf die Fußballen drücken.'
-            },
 
             // SCHULTERN
             {
@@ -1528,24 +1541,8 @@
             },
 
             // BAUCH / CORE
-            {
-                category: 'Bauch',
-                name: 'Bauchmaschine (Crunch-Maschine)',
-                muscle: 'Gerade Bauchmuskulatur',
-                targetReps: '12-15 Wdh.',
-                weight: 30,
-                reps: 15,
-                note: 'Wirbel für Wirbel einrollen (nicht aus der Hüfte klappen), beim Zusammenrollen ausatmen.'
-            },
-            {
-                category: 'Bauch',
-                name: 'Kabelzug-Crunches (Kniend am Seil)',
-                muscle: 'Bauchmuskulatur',
-                targetReps: '12-15 Wdh.',
-                weight: 25,
-                reps: 15,
-                note: 'Seil neben dem Kopf halten, Hüfte fixieren und Brustbein Richtung Becken einrollen.'
-            },
+            { category: 'Bauch', name: 'Beinheben liegend (Bodyweight)', muscle: 'Bauch & Hüftbeuger', targetReps: '10-15 Wdh.', weight: 0, reps: 12, note: 'Unterer Rücken bleibt kontrolliert am Boden; Knie bei Bedarf beugen.' },
+            { category: 'Bauch', name: 'Knieheben an der Dip-Station (Bodyweight)', muscle: 'Bauch & Hüftbeuger', targetReps: '10-15 Wdh.', weight: 0, reps: 12, note: 'Ohne Schwung anheben, das Becken am oberen Punkt leicht einrollen.' },
             {
                 category: 'Bauch',
                 name: 'Beinheben hängend / Dip-Station (Bodyweight)',
@@ -1581,8 +1578,6 @@
                         ['Latzug (Neutralgriff)', 'Rücken & Bizeps', 3, 8, 12, 'Ellbogen nach unten führen, ohne Schwung ziehen.'],
                         ['Beinbeuger (Sitzend)', 'Hintere Oberschenkel', 2, 10, 15, 'Becken am Polster lassen und langsam zurückführen.'],
                         ['Seitheben (Kabelzug)', 'Seitliche Schulter', 2, 12, 20, 'Leicht gebeugte Arme, ohne Schwung bis etwa Schulterhöhe.'],
-                        ['Wadenheben (Maschine)', 'Waden', 2, 10, 20, 'Ferse kontrolliert absenken, oben kurz halten.'],
-                        ['Crunch (Maschine)', 'Bauch', 2, 10, 15, 'Rippen zum Becken bewegen, nicht an den Armen ziehen.']
                     ] },
                     b: { label: 'Ganzkörper B', exercises: [
                         ['Rumänisches Kreuzheben (Kurzhanteln)', 'Hintere Oberschenkel & Gesäß', 3, 8, 12, 'Hüfte zurückschieben, Hanteln körpernah; Bewegung bei neutralem Rücken begrenzen.'],
@@ -1613,8 +1608,7 @@
                         ['Rumänisches Kreuzheben (Kurzhanteln)', 'Hintere Oberschenkel & Gesäß', 3, 8, 12, 'Hüfte nach hinten, Rücken neutral.'],
                         ['Beinbeuger (Sitzend)', 'Hintere Oberschenkel', 2, 10, 15, 'Langsame Rückbewegung.'],
                         ['Beinstrecker (Maschine)', 'Vordere Oberschenkel', 2, 10, 15, 'Gelenkachse zur Maschine ausrichten.'],
-                        ['Wadenheben (Maschine)', 'Waden', 3, 10, 20, 'Kontrolliert dehnen und anheben.'],
-                        ['Crunch (Maschine)', 'Bauch', 2, 10, 15, 'Rippen Richtung Becken einrollen.']
+                        ['Beinheben (Dip-Station)', 'Bauch & Hüftbeuger', 2, 10, 15, 'Knie bei Bedarf beugen. Becken ohne Schwung kontrolliert einrollen.', 'bodyweight']
                     ] },
                     c: { label: 'Oberkörper B', exercises: [
                         ['Schrägbank-Brustpresse (Maschine)', 'Brust & Trizeps', 3, 8, 12, 'Rücken am Polster, sauber drücken.'],
@@ -1631,8 +1625,7 @@
                         ['Hip Thrust (Maschine)', 'Gesäß', 3, 8, 12, 'Oben Hüfte strecken, nicht den Rücken überstrecken.'],
                         ['Beinbeuger (Sitzend)', 'Hintere Oberschenkel', 3, 10, 15, 'Becken stabil am Polster.'],
                         ['Beinstrecker (Maschine)', 'Vordere Oberschenkel', 2, 10, 15, 'Kontrolliert bewegen, nicht einrasten lassen.'],
-                        ['Wadenheben (Maschine)', 'Waden', 3, 10, 20, 'Unten kontrolliert absenken.'],
-                        ['Crunch (Maschine)', 'Bauch', 2, 10, 15, 'Bewegung aus dem Rumpf.']
+                        ['Beinheben (Dip-Station)', 'Bauch & Hüftbeuger', 2, 10, 15, 'Knie bei Bedarf beugen. Becken ohne Schwung kontrolliert einrollen.', 'bodyweight']
                     ] }
                 }
             },
@@ -1659,8 +1652,7 @@
                         ['Rumänisches Kreuzheben (Kurzhanteln)', 'Hintere Oberschenkel & Gesäß', 3, 8, 12, 'Hüfte zurück, Rücken neutral.'],
                         ['Beinbeuger (Sitzend)', 'Hintere Oberschenkel', 2, 10, 15, 'Langsam zurückführen.'],
                         ['Beinstrecker (Maschine)', 'Vordere Oberschenkel', 2, 10, 15, 'Gelenkachse passend einstellen.'],
-                        ['Wadenheben (Maschine)', 'Waden', 3, 10, 20, 'Volle kontrollierte Bewegung.'],
-                        ['Crunch (Maschine)', 'Bauch', 2, 10, 15, 'Rippen zum Becken einrollen.']
+                        ['Beinheben (Dip-Station)', 'Bauch & Hüftbeuger', 2, 10, 15, 'Knie bei Bedarf beugen. Becken ohne Schwung kontrolliert einrollen.', 'bodyweight']
                     ] }
                 }
             }
@@ -1671,7 +1663,7 @@
                 id: `${planId}-${dayId}-${i}`, name: row[0], muscle: row[1],
                 targetReps: `${row[3]}–${row[4]} Wdh.`, note: row[5], lastRecord: '-',
                 // Zero is an unselected load, not a prescribed starting weight.
-                loadUnselected: true,
+                loadUnselected: row[6] !== 'bodyweight',
                 sets: Array.from({ length: row[2] }, () => ({ weight: 0, reps: row[3], done: false }))
             }));
         }
@@ -1691,6 +1683,7 @@
             appState.records = appState.records || {};
             appState.history = appState.history || [];
             appState.bodyweightLogs = appState.bodyweightLogs || [];
+            migrateExercisePreferencesV13();
         }
         function snapshotTrainingSession() {
             if (!appState.planSessions) return;
@@ -1731,6 +1724,40 @@
             if (!plan.days[dayId] && !(dayId === 'legacy' && appState.trainingPlan === 'fullbody' && appState.planSessions['fullbody:legacy'])) return;
             if (dayId !== appState.trainingDay) activateTrainingSession(appState.trainingPlan, dayId);
         }
+        let trainingViewportBaseline = 0;
+        function syncTrainingSetupViewport() {
+            const modal = document.getElementById('training-setup-modal');
+            const viewport = window.visualViewport;
+            if (!modal || modal.classList.contains('hidden') || !viewport) return;
+            modal.style.top = `${viewport.offsetTop}px`;
+            modal.style.height = `${viewport.height}px`;
+            modal.style.bottom = 'auto';
+            const keyboardOpen = trainingSetupStep === 'name' && viewport.height < trainingViewportBaseline - 100;
+            modal.classList.toggle('keyboard-open', keyboardOpen);
+            const name = document.getElementById('training-setup-name');
+            if (document.activeElement === name) {
+                window.requestAnimationFrame(() => {
+                    if (document.activeElement !== name || modal.classList.contains('hidden')) return;
+                    const padding = parseFloat(window.getComputedStyle(modal).paddingTop) || 20;
+                    const field = name.getBoundingClientRect(), bounds = modal.getBoundingClientRect();
+                    const top = bounds.top + padding + 8, bottom = bounds.bottom - 72;
+                    if (field.top < top || field.bottom > bottom) modal.scrollTop = Math.max(0, modal.scrollTop + field.top - top);
+                });
+            }
+        }
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', syncTrainingSetupViewport);
+            window.visualViewport.addEventListener('scroll', syncTrainingSetupViewport);
+        }
+        window.addEventListener('resize', syncTrainingSetupViewport);
+        window.addEventListener('orientationchange', () => {
+            trainingViewportBaseline = window.innerHeight;
+            syncTrainingSetupViewport();
+        });
+        document.addEventListener('focusin', event => {
+            if (event.target.id === 'training-setup-name') syncTrainingSetupViewport();
+        });
+
         let trainingSetupIsInitial = false;
         let trainingSetupStep = 'name';
         let trainingSetupPreviousFocus = null;
@@ -1746,11 +1773,13 @@
             document.getElementById('training-setup-cancel').hidden = trainingSetupIsInitial;
             document.getElementById('training-setup-error').textContent = '';
             document.getElementById('training-setup-modal').scrollTop = 0;
+            syncTrainingSetupViewport();
             if (!isName) document.querySelector('input[name="training-choice"]:checked').focus({ preventScroll: true });
         }
         function openTrainingSetup(initial = false) {
             if (!initial && isDailyQuestCompleted()) return;
             trainingSetupIsInitial = initial;
+            trainingViewportBaseline = window.visualViewport?.height || window.innerHeight || 800;
             trainingSetupPreviousFocus = document.activeElement;
             const name = document.getElementById('training-setup-name');
             name.value = appState.player.name === 'SUNG JIN-WOO' ? '' : appState.player.name;
@@ -2089,7 +2118,9 @@
             } catch (e) {
                 console.error('Fehler beim Laden des System-Speichers:', e);
             }
+            const previousExerciseRevision = appState.exerciseRevision;
             ensureTrainingState();
+            if (appState.onboardingComplete && previousExerciseRevision !== appState.exerciseRevision) saveState();
             warmupRemainingSeconds = (appState.warmup.minutes || 10) * 60;
         }
 
@@ -2358,7 +2389,7 @@
                                     ${ex.name}
                                 </h3>
                                 <div class="text-[11px] font-mono-tech text-cyan-300/80">
-                                    ${ex.muscle} • Ziel: ${ex.targetReps}
+                                    ${renderExerciseMuscleLinks(ex, exIndex)} <span class="muscle-target-reps">Ziel: ${escapeTrainingText(ex.targetReps)}</span>
                                 </div>
                             </div>
                         </div>
@@ -2867,12 +2898,102 @@
             document.getElementById('system-modal').classList.add('hidden');
         }
 
-        function getCombinedExerciseLibrary() {
-            const customItems = Array.isArray(appState.customLibrary) ? appState.customLibrary : [];
-            return [...customItems, ...PREMADE_EXERCISE_LIBRARY];
+        function getExerciseMuscleCategories(exercise) {
+            const text = `${exercise.name || ''} ${exercise.muscle || ''}`.toLowerCase();
+            const rules = [
+                ['Brust', /brust|butterfly(?!.*reverse)|bench|chest/],
+                ['Rücken', /rücken|rudern|latzug|row|pulldown/],
+                ['Beine', /beine|oberschenkel|gesäß|hamstring|beinpresse|beinbeuger|beinstrecker|kniebeuge|kreuzheben|hip thrust/],
+                ['Schultern', /schulter|seitheben|reverse fly|face pull/],
+                ['Bizeps', /bizeps|biceps|curl(?!.*bein)/],
+                ['Trizeps', /trizeps|triceps/],
+                ['Bauch', /bauch|core|crunch|beinheben|knieheben/]
+            ];
+            const categories = rules.filter(([category, pattern]) => {
+                if (category === 'Bizeps' && /leg.?curl|beinbeuger/.test(text) && !/bizeps|biceps/.test(text)) return false;
+                return pattern.test(text);
+            }).map(([category]) => category);
+            if (exercise.category && rules.some(([category]) => category === exercise.category)) categories.unshift(exercise.category);
+            return [...new Set(categories)];
+        }
+        function renderExerciseMuscleLinks(exercise, index) {
+            const categories = getExerciseMuscleCategories(exercise);
+            if (!categories.length) return escapeTrainingText(exercise.muscle || 'Eigene Übung');
+            return categories.map(category => `<button type="button" class="muscle-alternative-link" onclick="openMuscleAlternatives(${index}, '${category}')" aria-label="Alternative Übungen für ${category} anzeigen">${category} <span aria-hidden="true">↔</span></button>`).join(' ');
+        }
+        function isRemovedCalfExercise(exercise) {
+            return /waden[\s-]*heben|calf.?rais/i.test(exercise.name || '');
+        }
+        function makeLegRaiseExercise(previous) {
+            return {
+                id: previous.id, name: 'Beinheben (Dip-Station)', category: 'Bauch', muscle: 'Bauch & Hüftbeuger',
+                targetReps: '10–15 Wdh.', note: 'Knie bei Bedarf beugen. Becken kontrolliert einrollen, ohne Schwung absenken.',
+                loadUnselected: false, lastRecord: '-',
+                sets: Array.from({length: previous.sets?.length || 2}, () => ({weight: 0, reps: 10, done: false}))
+            };
+        }
+        function migrateExercisePreferencesV13() {
+            if (appState.exerciseRevision >= 13) return;
+            const backup = cloneTrainingValue({exercises: appState.exercises, planSessions: appState.planSessions, customLibrary: appState.customLibrary || []});
+            function revise(exercises, planId) {
+                if (!Array.isArray(exercises)) return exercises;
+                return exercises.flatMap(exercise => {
+                    if (isRemovedCalfExercise(exercise) || (planId === 'fullbody' && getExerciseMuscleCategories(exercise).includes('Bauch'))) {
+                        return [];
+                    }
+                    if (/crunch/i.test(exercise.name || '')) return [makeLegRaiseExercise(exercise)];
+                    return [exercise];
+                });
+            }
+            // Snapshot before mutating any day so the pre-update backup remains complete.
+            const before = JSON.stringify(backup);
+            appState.exercises = revise(appState.exercises, appState.trainingPlan);
+            for (const [key, session] of Object.entries(appState.planSessions)) session.exercises = revise(session.exercises, key.split(':')[0]);
+            appState.customLibrary = (appState.customLibrary || []).filter(exercise => !isRemovedCalfExercise(exercise) && !/crunch/i.test(exercise.name || ''));
+            const after = JSON.stringify({exercises: appState.exercises, planSessions: appState.planSessions, customLibrary: appState.customLibrary});
+            if (before !== after) appState.exerciseBackupV13 = backup;
+            appState.exerciseRevision = 13;
+        }
+        let libraryReplacementTarget = null;
+        function openMuscleAlternatives(index, category) {
+            if (isDailyQuestCompleted()) return;
+            const exercise = appState.exercises[index];
+            if (!exercise || !getExerciseMuscleCategories(exercise).includes(category)) return;
+            openAddExerciseModal(category);
+            libraryReplacementTarget = {id: exercise.id, planId: appState.trainingPlan, dayId: appState.trainingDay};
+            document.getElementById('exercise-library-title').textContent = `ÜBUNG ERSETZEN · ${category.toUpperCase()}`;
+            renderExerciseLibrary();
+        }
+        function storePickedExercise(exercise) {
+            if (isDailyQuestCompleted()) return false;
+            if (!libraryReplacementTarget) { appState.exercises.push(exercise); return true; }
+            const target = libraryReplacementTarget;
+            const index = appState.exercises.findIndex(item => item.id === target.id);
+            if (index < 0 || target.planId !== appState.trainingPlan || target.dayId !== appState.trainingDay) {
+                closeAddExerciseModal(); showSystemToast('Trainingstag gewechselt. Bitte die Übung erneut auswählen.'); return false;
+            }
+            const previous = appState.exercises[index];
+            if (previous.sets.some(set => set.done) && !confirm('Diese Übung hat bereits abgehakte Sätze. Beim Austausch werden ihre heutigen Sätze ersetzt. Trotzdem tauschen?')) return false;
+            exercise.id = previous.id;
+            if (exercise.loadUnselected !== undefined) {
+                const first = exercise.sets[0];
+                exercise.sets = Array.from({length: previous.sets.length || 3}, () => ({...first, done: false}));
+            }
+            appState.exercises.splice(index, 1, exercise);
+            return true;
         }
 
-        function openAddExerciseModal() {
+        function getCombinedExerciseLibrary() {
+            const customItems = Array.isArray(appState.customLibrary) ? appState.customLibrary : [];
+            return [...customItems, ...PREMADE_EXERCISE_LIBRARY].filter(item => !isRemovedCalfExercise(item) && !/crunch/i.test(item.name));
+        }
+
+        function openAddExerciseModal(category = 'Alle') {
+            if (isDailyQuestCompleted()) return;
+            libraryReplacementTarget = null;
+            selectedLibraryCategory = category;
+            document.getElementById('library-search-input').value = '';
+            document.getElementById('exercise-library-title').textContent = 'ÜBUNG HINZUFÜGEN';
             document.getElementById('add-exercise-modal').classList.remove('hidden');
             switchAddExerciseMode('library');
             renderLibraryCategoryBar();
@@ -2880,6 +3001,7 @@
         }
 
         function closeAddExerciseModal() {
+            libraryReplacementTarget = null;
             document.getElementById('add-exercise-modal').classList.add('hidden');
         }
 
@@ -2978,7 +3100,7 @@
                         ${item.note ? `<p class="text-[11px] text-slate-400 italic leading-snug pt-0.5">${item.note}</p>` : ''}
                     </div>
                     <button class="sys-btn px-3 py-2 rounded font-orbitron text-[11px] font-bold shrink-0 self-center">
-                        + PLAN
+                        ${libraryReplacementTarget ? 'TAUSCHEN' : '+ PLAN'}
                     </button>
                 `;
 
@@ -2992,7 +3114,7 @@
             const reps = parseInt(template.reps) || 12;
             const recordStr = formatRecordLabel(weight, reps);
 
-            appState.exercises.push({
+            const pickedExercise = {
                 id: 'ex-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
                 name: template.name,
                 muscle: template.muscle,
@@ -3006,12 +3128,19 @@
                     { weight, reps, done: false },
                     { weight, reps, done: false }
                 ]
-            });
-
+            };
+            if (libraryReplacementTarget) {
+                pickedExercise.category = template.category;
+                pickedExercise.loadUnselected = (parseFloat(template.weight) || 0) > 0;
+                pickedExercise.lastRecord = appState.records[template.name] ? formatRecordLabel(appState.records[template.name].weight, appState.records[template.name].reps) : '-';
+                pickedExercise.sets.forEach(set => { set.weight = 0; });
+            }
+            const replacing = !!libraryReplacementTarget;
+            if (!storePickedExercise(pickedExercise)) return;
             saveState();
             renderAll();
             closeAddExerciseModal();
-            showSystemToast(`„${template.name}“ hinzugefügt!`);
+            showSystemToast(replacing ? 'Übung ausgetauscht.' : `„${template.name}“ hinzugefügt!`);
         }
 
         function confirmAddCustomExercise() {
@@ -3056,15 +3185,18 @@
                 }
             }
 
-            appState.exercises.push({
+            const customExercise = {
                 id: 'ex-custom-' + Date.now(),
                 name,
                 muscle,
                 targetReps: `${reps} Wdh.`,
                 note: customTemplate.note,
                 lastRecord: formatRecordLabel(weight, reps),
-                sets: setsArray
-            });
+                sets: setsArray,
+                category
+            };
+            const replacing = !!libraryReplacementTarget;
+            if (!storePickedExercise(customExercise)) return;
 
             document.getElementById('new-ex-name').value = '';
             document.getElementById('new-ex-muscle').value = '';
@@ -3072,7 +3204,7 @@
             saveState();
             renderAll();
             closeAddExerciseModal();
-            showSystemToast(`Eigene Übung „${name}“ hinzugefügt!`);
+            showSystemToast(replacing ? 'Übung ausgetauscht.' : `Eigene Übung „${name}“ hinzugefügt!`);
         }
 
         function openInstallModal() {
