@@ -8,6 +8,9 @@
     <meta name="apple-mobile-web-app-title" content="THE SYSTEM">
     <meta name="theme-color" content="#040814">
     <title>THE SYSTEM // Training des Spielers</title>
+    <link rel="apple-touch-icon" href="assets/app-icon-s-v10.png">
+    <link rel="icon" type="image/png" href="assets/app-icon-s-v10.png">
+    <link rel="manifest" href="manifest-v10.webmanifest">
 
     <link rel="preload" href="assets/fonts/CormorantGaramond-v7.ttf" as="font" type="font/ttf" crossorigin>
 
@@ -517,6 +520,26 @@
         }
         @supports not (color: color-mix(in srgb, white, black)) { .split-card-content { border-color: var(--card-accent); } }
 
+        /* Compact identity row: level, rank, name and experience. */
+        .hud-identity { display: grid; grid-template-columns: 44px 44px minmax(0, 1fr); gap: 7px; align-items: center; }
+        .hud-stat-box { width: 44px; min-height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; border: 1px solid #69cad369; border-radius: 7px; background: linear-gradient(145deg, #102938, #07111f); }
+        .hud-stat-label { font-family: 'Share Tech Mono', monospace; color: #8fcbd2; font-size: 9px; line-height: 1.1; letter-spacing: .06em; }
+        .hud-stat-value { font-family: 'Orbitron', sans-serif; font-size: 19px; font-weight: 700; line-height: 1.2; color: #ecf3fa; }
+        .hud-player { min-width: 0; }
+        #header-player-name { display: block; font-family: var(--font-display); font-size: 23px; font-weight: 600; line-height: 1.1; letter-spacing: .015em; color: #d9b97c; overflow-wrap: anywhere; }
+        .hud-experience { display: flex; align-items: center; gap: 7px; margin-top: 5px; min-width: 0; }
+        .hud-xp-track { min-width: 20px; flex: 1; height: 5px; background: #142333; border: 1px solid #5d8b9440; border-radius: 5px; overflow: hidden; }
+        #header-xp-bar { height: 100%; background: linear-gradient(90deg, #53c6d1, #8bcdd1); transition: width .4s; border-radius: inherit; }
+        #header-xp-text { flex-shrink: 0; color: #9ac7ce; font-family: 'Share Tech Mono', monospace; font-size: 10px; line-height: 1; white-space: nowrap; }
+        .hud-utilities { display: flex; align-items: center; justify-content: space-between; margin-top: 5px; min-height: 24px; }
+        .hud-quest { display: flex; align-items: center; gap: 7px; font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: .04em; color: #829eae; }
+        #header-quest-pct { color: #a0d4d9; font-size: 10px; font-family: 'Share Tech Mono', monospace; }
+        .hud-utility-buttons { display: flex; gap: 5px; }
+        .hud-icon-button { display: grid; place-items: center; width: 26px; height: 24px; border: 1px solid #50859655; border-radius: 6px; background: #0b233366; color: #8ed1dc; font-size: 11px; }
+        .hud-icon-button:focus-visible { outline: 2px solid #d9b97c; outline-offset: 2px; }
+        #header-rest-bar { margin-top: 4px; padding-top: 6px; }
+        @media (max-width: 350px) { .hud-identity { gap: 5px; } #header-player-name { font-size: 21px; } }
+
     </style>
 </head>
 <body class="antialiased selection:bg-cyan-500 selection:text-slate-950">
@@ -527,59 +550,33 @@
     <!-- TOP SYSTEM STATUS BAR -->
     <header id="system-header" class="border-b border-cyan-500/30">
         <div class="max-w-lg mx-auto">
-            <!-- Top Row: Player Name & Audio/Install Controls -->
-            <div class="flex items-center justify-between mb-2">
-                <div class="flex items-center gap-2 text-left">
-                    <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span>
-                    <span id="header-player-name" class="font-orbitron text-xs tracking-wider text-cyan-300 font-bold">
-                        SUNG JIN-WOO
-                    </span>
+            <div class="hud-identity">
+                <div class="hud-stat-box" aria-label="Spielerlevel">
+                    <span class="hud-stat-label">LVL</span>
+                    <span id="header-level" class="hud-stat-value">1</span>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="toggleSound()" id="sound-btn" class="text-xs px-2.5 py-1 rounded border border-cyan-500/40 bg-cyan-950/40 text-cyan-300 flex items-center gap-1.5">
-                        <i id="sound-icon" class="fa-solid fa-volume-high text-[11px]"></i>
-                        <span class="font-mono-tech text-[11px]" id="sound-label">SFX AN</span>
-                    </button>
-                    <button onclick="openInstallModal()" class="text-xs px-2.5 py-1 rounded border border-purple-500/40 bg-purple-950/40 text-purple-300 flex items-center gap-1" title="Auf iPhone installieren">
-                        <i class="fa-brands fa-apple text-xs"></i>
-                        <span class="font-mono-tech text-[11px]">iOS APP</span>
-                    </button>
+                <div class="hud-stat-box" aria-label="Spielerrang">
+                    <span class="hud-stat-label">RANG</span>
+                    <span id="header-rank" class="hud-stat-value">E</span>
+                </div>
+                <div class="hud-player">
+                    <span id="header-player-name">SUNG JIN-WOO</span>
+                    <div class="hud-experience">
+                        <div class="hud-xp-track" role="progressbar" aria-label="Erfahrung bis zum nächsten Level" aria-valuemin="0" aria-valuemax="250" aria-valuenow="0" id="header-xp-track">
+                            <div id="header-xp-bar" style="width:0%"></div>
+                        </div>
+                        <span id="header-xp-text">0 / 250</span>
+                    </div>
                 </div>
             </div>
-
-            <!-- Player Level, Rank & XP Bar -->
-            <div class="flex items-center justify-between gap-3">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-11 h-11 rounded bg-gradient-to-br from-cyan-950 to-slate-900 border border-cyan-400/70 flex flex-col items-center justify-center shadow-[0_0_12px_rgba(0,229,255,0.25)]">
-                        <span class="text-[9px] font-mono-tech text-cyan-300 uppercase leading-none">LVL</span>
-                        <span id="header-level" class="font-orbitron text-lg font-black text-white leading-tight text-glow-cyan">1</span>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-1.5">
-                            <span id="header-rank" class="text-[11px] font-orbitron font-bold px-1.5 py-0.5 rounded bg-cyan-500/20 border border-cyan-400/50 text-cyan-300">
-                                E-RANG
-                            </span>
-                            <span id="header-title" class="text-xs font-bold tracking-wider text-slate-200 uppercase">
-                                Erwachter Spieler
-                            </span>
-                        </div>
-                        <!-- XP Bar -->
-                        <div class="w-44 sm:w-56 mt-1.5">
-                            <div class="flex justify-between text-[10px] font-mono-tech text-cyan-300/90 mb-0.5">
-                                <span>EXP</span>
-                                <span id="header-xp-text">0 / 250</span>
-                            </div>
-                            <div class="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden border border-cyan-500/30">
-                                <div id="header-xp-bar" class="h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 transition-all duration-500" style="width: 0%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Daily Quest Completion Mini Ring / Percentage -->
-                <div class="text-right">
-                    <div class="text-[10px] font-mono-tech text-slate-400 uppercase">Tages-Quest</div>
-                    <div id="header-quest-pct" class="font-orbitron text-base font-bold text-cyan-300 text-glow-cyan">0%</div>
+            <div class="hud-utilities">
+                <div class="hud-quest"><span>TAGES-QUEST</span><span id="header-quest-pct">0%</span></div>
+                <div class="hud-utility-buttons">
+                    <button type="button" onclick="toggleSound()" id="sound-btn" class="hud-icon-button" aria-label="Ton ausschalten" title="Ton ausschalten">
+                        <i id="sound-icon" class="fa-solid fa-volume-high" aria-hidden="true"></i>
+                        <span id="sound-label" class="sr-only">SFX AN</span>
+                    </button>
+                    <button type="button" onclick="openInstallModal()" class="hud-icon-button" aria-label="App auf iPhone installieren" title="App auf iPhone installieren"><i class="fa-brands fa-apple" aria-hidden="true"></i></button>
                 </div>
             </div>
 
@@ -2112,6 +2109,10 @@
         }
 
         function updateSoundUI() {
+            const soundButton = document.getElementById('sound-btn');
+            const soundAction = appState.player.soundEnabled ? 'Ton ausschalten' : 'Ton einschalten';
+            soundButton.setAttribute('aria-label', soundAction);
+            soundButton.title = soundAction;
             const icon = document.getElementById('sound-icon');
             const label = document.getElementById('sound-label');
             if (appState.player.soundEnabled) {
@@ -2807,10 +2808,12 @@
             document.getElementById('header-player-name').textContent = playerName;
             document.getElementById('status-player-name').textContent = playerName;
             document.getElementById('header-level').textContent = p.level;
-            document.getElementById('header-rank').textContent = rankInfo.rank;
-            document.getElementById('header-title').textContent = rankInfo.title;
+            document.getElementById('header-rank').textContent = rankInfo.rank.split('-')[0];
             document.getElementById('header-xp-text').textContent = `${p.xp} / ${reqXP}`;
             document.getElementById('header-xp-bar').style.width = `${xpPct}%`;
+            const xpTrack = document.getElementById('header-xp-track');
+            xpTrack.setAttribute('aria-valuemax', String(reqXP));
+            xpTrack.setAttribute('aria-valuenow', String(Math.min(p.xp, reqXP)));
 
             // Status Window
             document.getElementById('status-rank-pill').textContent = `${rankInfo.rank} • ${rankInfo.title}`;
