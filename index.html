@@ -473,6 +473,19 @@
         #training-day-select { background: #050d1b; color: #c9e9ed; border-color: #51828d55; min-height: 43px; }
         #system-header { border-bottom-color: #74939833; box-shadow: 0 6px 18px #00000020; }
         #header-player-name { font-family: var(--font-display); font-size: 16px; font-weight: 600; letter-spacing: .07em; color: #b1e8eb; }
+        #status-player-name {
+            font-family: var(--font-display); font-size: clamp(32px, 9vw, 44px);
+            font-weight: 600; line-height: 1.15; letter-spacing: .025em;
+            color: #d9b97c; text-shadow: 0 2px 14px #b18b431a;
+            min-width: 0; overflow-wrap: anywhere;
+        }
+        #status-edit-name {
+            flex-shrink: 0; display: grid; place-items: center;
+            width: 34px; height: 34px; border-radius: 8px;
+            background: #08334466; border: 1px solid #06b6d466; color: #67e8f9;
+        }
+        #status-edit-name:hover { color: #cffafe; border-color: #67e8f9; }
+        #status-edit-name:focus-visible { outline: 2px solid #67e8f9; outline-offset: 3px; }
         #header-level, #header-quest-pct { text-shadow: none; }
         body > nav { background: #030914fa; -webkit-backdrop-filter: none; backdrop-filter: none; border-color: #72899740; }
         body > nav button { min-height: 56px; }
@@ -516,13 +529,12 @@
         <div class="max-w-lg mx-auto">
             <!-- Top Row: Player Name & Audio/Install Controls -->
             <div class="flex items-center justify-between mb-2">
-                <button onclick="openEditNameModal()" class="flex items-center gap-2 group text-left">
+                <div class="flex items-center gap-2 text-left">
                     <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span>
-                    <span id="header-player-name" class="font-orbitron text-xs tracking-wider text-cyan-300 font-bold group-hover:text-white transition-colors">
+                    <span id="header-player-name" class="font-orbitron text-xs tracking-wider text-cyan-300 font-bold">
                         SUNG JIN-WOO
                     </span>
-                    <i class="fa-solid fa-pen text-[10px] text-cyan-400/70 group-hover:text-cyan-300"></i>
-                </button>
+                </div>
                 <div class="flex items-center gap-2">
                     <button onclick="toggleSound()" id="sound-btn" class="text-xs px-2.5 py-1 rounded border border-cyan-500/40 bg-cyan-950/40 text-cyan-300 flex items-center gap-1.5">
                         <i id="sound-icon" class="fa-solid fa-volume-high text-[11px]"></i>
@@ -803,11 +815,11 @@
             <div class="system-box system-box-purple p-4">
                 <div class="text-center border-b border-purple-500/30 pb-3 mb-4">
                     <div class="flex items-center justify-center gap-2">
-                        <h2 id="status-player-name" class="font-orbitron text-xl font-black text-white text-glow-purple">
+                        <h2 id="status-player-name">
                             SUNG JIN-WOO
                         </h2>
-                        <button onclick="openEditNameModal()" class="text-xs px-2 py-1 rounded bg-purple-950/70 border border-purple-400/50 text-purple-200 hover:text-white" title="Namen ändern">
-                            <i class="fa-solid fa-pen"></i>
+                        <button id="status-edit-name" type="button" onclick="openEditNameModal()" title="Namen ändern" aria-label="Spielernamen ändern">
+                            <i class="fa-solid fa-pen text-xs" aria-hidden="true"></i>
                         </button>
                     </div>
                     <div class="flex justify-center items-center gap-2 mt-1.5">
