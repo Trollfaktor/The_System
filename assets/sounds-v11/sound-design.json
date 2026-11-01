@@ -1,0 +1,49 @@
+{
+  "sampleRate": 44100,
+  "channels": 2,
+  "description": "Original dark-fantasy system cues. Inharmonic bells, low percussion, minor/add9 pads and damped hall reflections. No anime or game recordings.",
+  "files": [
+    {
+      "name": "rune-confirm",
+      "seconds": 1.7,
+      "peak": 0.52,
+      "rms": 0.066,
+      "bytes": 299924
+    },
+    {
+      "name": "exercise-seal",
+      "seconds": 2.9,
+      "peak": 0.76,
+      "rms": 0.1199,
+      "bytes": 511604
+    },
+    {
+      "name": "rest-ready",
+      "seconds": 2.8,
+      "peak": 0.7,
+      "rms": 0.0996,
+      "bytes": 493964
+    },
+    {
+      "name": "warmup-awaken",
+      "seconds": 3.2,
+      "peak": 0.73,
+      "rms": 0.1018,
+      "bytes": 564524
+    },
+    {
+      "name": "quest-victory",
+      "seconds": 5,
+      "peak": 0.84,
+      "rms": 0.1312,
+      "bytes": 882044
+    },
+    {
+      "name": "level-ascension",
+      "seconds": 5.4,
+      "peak": 0.87,
+      "rms": 0.1343,
+      "bytes": 952608
+    }
+  ]
+}
