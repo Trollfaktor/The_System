@@ -36,6 +36,10 @@
             box-sizing: border-box;
         }
 
+        html {
+            overflow-x: hidden;
+        }
+
         body {
             background-color: var(--sys-bg);
             background-image: 
@@ -45,7 +49,8 @@
             color: #e2f1ff;
             font-family: 'Rajdhani', sans-serif;
             min-height: 100vh;
-            overflow-x: hidden;
+            /* Keep the viewport as the sticky header's scrolling container. */
+            overflow-x: visible;
             padding-bottom: 92px;
             user-select: none;
         }
@@ -318,10 +323,31 @@
 
         /* Safe Area Support for iPhone Notch & Home Indicator */
         .safe-top {
-            padding-top: max(12px, env(safe-area-inset-top));
+            padding-top: calc(12px + env(safe-area-inset-top, 0px));
         }
         .safe-bottom {
             padding-bottom: max(12px, env(safe-area-inset-bottom));
+        }
+
+        /* Allow the HUD to fit narrow phones and long player names. */
+        header > div > .flex:first-child {
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        #header-player-name {
+            overflow-wrap: anywhere;
+            min-width: 0;
+        }
+        #rest-idle-row {
+            flex-wrap: wrap;
+        }
+        @media (max-width: 380px) {
+            header > div > .flex:nth-child(2) {
+                flex-wrap: wrap;
+            }
+            #rest-active-row > .flex {
+                flex-wrap: wrap;
+            }
         }
     </style>
 </head>
