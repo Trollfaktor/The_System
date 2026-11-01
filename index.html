@@ -1906,6 +1906,8 @@
         let audioCtx = null;
         let systemAudioOutput = null;
         const systemSoundBuffers = new Map();
+        const systemSoundData = new Map();
+        let systemAudioPrimed = false;
         let activeSystemSound = null;
         let pendingSystemSound = null;
         let systemSoundRequest = 0;
@@ -1932,13 +1934,26 @@
             if (audioCtx.state === 'suspended' || audioCtx.state === 'interrupted') audioCtx.resume().catch(() => {});
             return audioCtx;
         }
+        function loadSystemSoundData(file) {
+            if (!systemSoundData.has(file)) {
+                const loading = fetch(`assets/sounds-v11/${file}.wav`)
+                    .then(response => { if (!response.ok) throw new Error('Sound could not be loaded'); return response.arrayBuffer(); })
+                    .catch(() => { systemSoundData.delete(file); return null; });
+                systemSoundData.set(file, loading);
+            }
+            return systemSoundData.get(file);
+        }
+        function preloadSystemSoundData() {
+            if (!appState.player.soundEnabled || window.location?.protocol === 'file:') return;
+            // Download without creating a context: iOS must create/resume it inside a tap.
+            [...new Set(Object.values(SYSTEM_SOUND_LIBRARY).map(cue => cue.file))].forEach(loadSystemSoundData);
+        }
         function loadSystemSound(file) {
             if (!systemSoundBuffers.has(file)) {
                 const ctx = getAudioContext();
                 if (!ctx) return Promise.resolve(null);
-                const loading = fetch(`assets/sounds-v11/${file}.wav`)
-                    .then(response => { if (!response.ok) throw new Error('Sound could not be loaded'); return response.arrayBuffer(); })
-                    .then(data => ctx.decodeAudioData(data))
+                const loading = loadSystemSoundData(file)
+                    .then(data => { if (!data) throw new Error('Sound unavailable'); return ctx.decodeAudioData(data.slice(0)); })
                     .catch(() => { systemSoundBuffers.delete(file); return null; });
                 systemSoundBuffers.set(file, loading);
             }
@@ -1983,7 +1998,10 @@
             try {
                 const buffer = await loadSystemSound(cue.file);
                 if (!buffer || request !== systemSoundRequest || !appState.player.soundEnabled) return;
-                if (ctx.state === 'suspended' || ctx.state === 'interrupted') await ctx.resume();
+                if (ctx.state === 'suspended' || ctx.state === 'interrupted') {
+                    // A blocked iOS resume can remain pending; never hold cue priority indefinitely.
+                    await Promise.race([ctx.resume().catch(() => {}), new Promise(resolve => setTimeout(resolve, 300))]);
+                }
                 if (request !== systemSoundRequest || !appState.player.soundEnabled || ctx.state !== 'running') return;
                 stopSystemSounds();
                 const source = ctx.createBufferSource();
@@ -2003,12 +2021,28 @@
         }
         function unlockSystemAudio() {
             if (!appState.player.soundEnabled) return;
-            if (!getAudioContext()) return;
-            // Decode once after interaction so timer alerts do not wait for downloads.
+            const ctx = getAudioContext();
+            if (!ctx || window.location?.protocol === 'file:') return;
+            if (!systemAudioPrimed || ctx.state !== 'running') {
+                // Schedule real (silent) buffer playback synchronously inside the trusted tap.
+                // No fetch or await may precede this iPhone audio-session handshake.
+                try {
+                    const primer = ctx.createBufferSource();
+                    primer.buffer = ctx.createBuffer(1, 128, ctx.sampleRate || 44100);
+                    primer.connect(ctx.destination);
+                    primer.onended = () => primer.disconnect();
+                    primer.start(0);
+                    systemAudioPrimed = true;
+                } catch (error) { systemAudioPrimed = false; }
+            }
             [...new Set(Object.values(SYSTEM_SOUND_LIBRARY).map(cue => cue.file))].forEach(loadSystemSound);
         }
-        ['pointerdown', 'touchstart', 'keydown'].forEach(eventName => {
-            window.addEventListener(eventName, unlockSystemAudio, { passive: true });
+        ['click', 'touchend', 'pointerup', 'keydown'].forEach(eventName => {
+            // Capture runs before the workout button's handler can request its first cue.
+            window.addEventListener(eventName, unlockSystemAudio, { passive: true, capture: true });
+        });
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) systemAudioPrimed = false;
         });
 
         function toggleSound() {
@@ -3142,6 +3176,7 @@
 
         window.onload = function () {
             loadState();
+            preloadSystemSoundData();
             renderAll();
             if (!appState.onboardingComplete) openTrainingSetup(true);
             setInterval(refreshTrainingDate, 30000);
