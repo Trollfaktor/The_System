@@ -322,8 +322,21 @@
         }
 
         /* Safe Area Support for iPhone Notch & Home Indicator */
-        .safe-top {
+        /* ID specificity prevents Tailwind's generated padding utilities
+           from overriding the iPhone safe-area inset. */
+        #system-header {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            z-index: 45;
+            background: #030712;
+            -webkit-backdrop-filter: none;
+            backdrop-filter: none;
+            padding-top: 12px;
             padding-top: calc(12px + env(safe-area-inset-top, 0px));
+            padding-bottom: 10px;
+            padding-left: max(14px, env(safe-area-inset-left, 0px));
+            padding-right: max(14px, env(safe-area-inset-right, 0px));
         }
         .safe-bottom {
             padding-bottom: max(12px, env(safe-area-inset-bottom));
@@ -357,7 +370,7 @@
     <div id="toast-container" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none flex flex-col items-center gap-2 w-11/12 max-w-sm"></div>
 
     <!-- TOP SYSTEM STATUS BAR -->
-    <header class="sticky top-0 z-30 bg-[#030712]/90 backdrop-blur-md border-b border-cyan-500/30 safe-top px-3.5 py-2.5">
+    <header id="system-header" class="border-b border-cyan-500/30">
         <div class="max-w-lg mx-auto">
             <!-- Top Row: Player Name & Audio/Install Controls -->
             <div class="flex items-center justify-between mb-2">
