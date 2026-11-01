@@ -453,13 +453,20 @@
         .stepper-btn { background: #0d1a2b; color: #9adddf; }
         .stepper-input { border-color: #557b9133; }
         .quest-finish-btn {
-            border: 1px solid #6bdee5; border-radius: 11px;
-            background: linear-gradient(135deg, #5bdae3, #26a9bd);
-            color: #042431; box-shadow: 0 7px 25px #26b5c21a;
+            border: 1px solid #a8895270; border-radius: 11px;
+            background: linear-gradient(135deg, #162635, #091321);
+            color: #d9b97c; box-shadow: 0 5px 20px #00000026;
             font-family: var(--font-display); font-size: 18px; letter-spacing: .08em;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            gap: 5px; text-align: center; min-height: 78px;
+            transition: opacity .2s, border-color .2s;
         }
         .quest-finish-btn::before, .quest-finish-btn::after { display: none; }
-        .quest-finish-btn:active { background: #50cbd6; box-shadow: none; }
+        .quest-finish-btn:disabled { opacity: .45; cursor: not-allowed; }
+        .quest-finish-btn:disabled:active { transform: none; }
+        .quest-finish-btn:not(:disabled):hover { border-color: #d9b97c; }
+        .quest-finish-btn:not(:disabled):active { background: #1b2c39; box-shadow: none; }
+        .quest-finish-reward { font-family: 'Share Tech Mono', monospace; font-size: 12px; font-weight: 400; letter-spacing: .04em; color: #d9b97c; }
         .quest-eyebrow { display: flex; align-items: center; justify-content: center; gap: 15px; padding: 0 0 17px; color: #c6aa79; font-family: var(--font-display); font-size: 12px; letter-spacing: .19em; }
         .quest-eyebrow span { font-size: 15px; color: #dfbb7a; }
         #training-plan-label { font-family: var(--font-display); font-size: 27px; font-weight: 600; letter-spacing: .01em; }
@@ -772,14 +779,9 @@
 
             <!-- COMPLETE DAILY WORKOUT BUTTON -->
             <div class="pt-2 pb-4 space-y-2.5">
-                <button onclick="finishWorkoutSession()" class="quest-finish-btn w-full py-3.5 px-4 font-orbitron font-bold text-sm tracking-widest uppercase text-cyan-100 flex items-center justify-between">
-                    <span class="flex items-center gap-2.5">
-                        <i class="fa-solid fa-shield-halved text-cyan-400 text-sm"></i>
-                        <span>QUEST ABSCHLIESSEN</span>
-                    </span>
-                    <span class="font-mono-tech text-[11px] font-normal px-2 py-0.5 rounded bg-cyan-500/15 border border-cyan-400/35 text-cyan-300 tracking-normal">
-                        +150 EXP
-                    </span>
+                <button id="quest-finish-button" type="button" onclick="finishWorkoutSession()" class="quest-finish-btn w-full py-3.5 px-4 font-bold uppercase" disabled>
+                    <span>QUEST ABSCHLIESSEN</span>
+                    <span class="quest-finish-reward">+150 EP</span>
                 </button>
 
                 <div class="flex justify-between items-center px-1">
@@ -2652,15 +2654,22 @@
             return { totalSets, doneSets, todayVolume: Math.round(todayVolume), pct, xpEarnedToday };
         }
 
+        function canFinishWorkout(m = calculateCurrentWorkoutMetrics()) {
+            return !isDailyQuestCompleted() && m.totalSets > 0 && m.doneSets === m.totalSets && appState.warmup.completed;
+        }
+
         function renderWorkoutSummary() {
             const m = calculateCurrentWorkoutMetrics();
+            const finishButton = document.getElementById('quest-finish-button');
+            finishButton.disabled = !canFinishWorkout(m);
+            finishButton.title = finishButton.disabled ? 'Zuerst Aufwärmen und alle Arbeitssätze abhaken.' : 'Tägliche Quest abschließen';
             document.getElementById('summary-sets').textContent = `${m.doneSets} / ${m.totalSets}`;
             document.getElementById('summary-volume').textContent = `${m.todayVolume.toLocaleString('de-DE')} kg`;
             document.getElementById('summary-xp').textContent = `+${m.xpEarnedToday} XP`;
             document.getElementById('header-quest-pct').textContent = `${m.pct}%`;
 
             const badge = document.getElementById('quest-status-badge');
-            if (m.pct === 100) {
+            if (canFinishWorkout(m)) {
                 badge.textContent = 'QUEST BEREIT';
                 badge.className = 'text-[11px] font-mono-tech px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-400 text-emerald-300';
             } else if (m.pct > 0) {
@@ -2675,8 +2684,8 @@
         function finishWorkoutSession() {
             if (isDailyQuestCompleted()) return;
             const m = calculateCurrentWorkoutMetrics();
-            if (m.doneSets === 0 && !appState.warmup.completed) {
-                showSystemToast('Bitte hake mindestens das Aufwärmen oder einen Satz ab!');
+            if (!canFinishWorkout(m)) {
+                showSystemToast('Bitte zuerst das Aufwärmen und alle Arbeitssätze abhaken.');
                 return;
             }
 
