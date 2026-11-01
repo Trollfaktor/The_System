@@ -562,6 +562,46 @@
         .muscle-alternative-link:focus-visible { outline: 2px solid #d9b97c; outline-offset: 2px; }
         .muscle-target-reps { display: inline-block; margin-left: 3px; color: #92afc4; }
 
+        .exercise-overview, .warmup-overview { display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; list-style: none; }
+        .exercise-overview::-webkit-details-marker, .warmup-overview::-webkit-details-marker { display: none; }
+        .exercise-overview::after, .warmup-overview::after { content: '⌄'; color: #91c8d0; font-size: 20px; flex-shrink: 0; }
+        details[open] > .exercise-overview::after, details[open] > .warmup-overview::after { transform: rotate(180deg); }
+        .exercise-overview-main { min-width: 0; flex: 1; }
+        .exercise-overview h3 { font-family: var(--font-display); font-size: 23px; font-weight: 600; line-height: 1.2; color: #e1edf4; margin-bottom: 4px; }
+        .exercise-count { color: #9bc9d0; font: 12px 'Share Tech Mono', monospace; white-space: nowrap; }
+        .exercise-detail-body { padding-top: 14px; margin-top: 12px; border-top: 1px solid #61869433; }
+        .warmup-overview { font-family: var(--font-display); font-size: 24px; color: #c9dde6; }
+        .warmup-overview small { font: 11px 'Share Tech Mono', monospace; color: #88a1b4; margin-left: auto; }
+        .warmup-detail-body { padding-top: 14px; }
+        .set-row-pr { border-color: #d9b97c !important; background: linear-gradient(90deg,#aa81212e,#e1ba5720) !important; }
+        .pr-card { border-color: #c6a46499 !important; background: linear-gradient(145deg,#211e17,#080f1b) !important; }
+        .pr-flag { color: #e4c78f; font: 10px 'Share Tech Mono', monospace; letter-spacing: .06em; display: inline-block; margin: 4px 0; }
+        .effort-control { margin-top: 15px; border: 0; padding: 0; display: flex; gap: 7px; flex-wrap: wrap; }
+        .effort-control legend { font-size: 13px; color: #a4bacb; margin-bottom: 7px; }
+        .effort-control legend span { color: #778c9e; }
+        .effort-control label { position: relative; cursor: pointer; }
+        .effort-control input { position: absolute; opacity: 0; }
+        .effort-control label span { display: inline-block; border: 1px solid #476d804d; border-radius: 7px; padding: 6px 12px; color: #a7c2ce; font-size: 13px; }
+        .effort-control input:checked + span { border-color: #c8a96b; color: #e0c48d; background: #a889521a; }
+        .effort-control input:focus-visible + span { outline: 2px solid #80dbe0; outline-offset: 2px; }
+        .training-save-button, .recovery-toggle { display: block; width: 100%; border: 1px solid #476d805c; border-radius: 10px; padding: 11px; color: #a9c6d4; background: #0b1829; font-size: 15px; }
+        .training-save-button:disabled { opacity: .4; }
+        #progression-modal { position: fixed; inset: 0; z-index: 75; background: #030712ed; padding: calc(22px + env(safe-area-inset-top,0px)) 18px calc(22px + env(safe-area-inset-bottom,0px)); overflow-y: auto; }
+        #progression-modal > div { max-width: 420px; margin: 5vh auto; padding: 22px; border-color: #bd9b5f88; }
+        #progression-modal h2 { font: 600 34px var(--font-display); color: #d9b97c; }
+        #progression-modal p { color: #a8bfce; font-size: 15px; margin: 12px 0; }
+        #progression-modal .stepper-capsule { max-width: 240px; height: 46px; margin: 18px auto; }
+        .progression-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .progression-actions button { padding: 12px; border-radius: 9px; }
+        #progression-accept { background: #203436; border: 1px solid #c2a36a; color: #e2c68d; }
+        #progression-accept:disabled { opacity: .35; }
+        .recovery-quest { border: 1px solid #6f668b40; border-radius: 10px; padding: 13px; margin-top: 11px; background: #0b1323; }
+        .recovery-quest label { display: flex; gap: 11px; align-items: flex-start; cursor: pointer; }
+        .recovery-quest strong { display: block; color: #d9d0ec; font-size: 18px; }
+        .recovery-quest small { display: block; color: #94a4ba; font-size: 13px; margin-top: 3px; }
+        .recovery-quest button { padding: 7px 11px; margin: 10px 0 0 24px; font-size: 12px; }
+        .recovery-quest button:disabled { opacity: .55; }
+
     </style>
 </head>
 <body class="antialiased selection:bg-cyan-500 selection:text-slate-950">
@@ -671,6 +711,19 @@
         </form>
     </div>
 
+    <div id="progression-modal" class="hidden" role="dialog" aria-modal="true" aria-labelledby="progression-title">
+        <div class="system-box"><h2 id="progression-title">Zeit für mehr?</h2><h3 id="progression-name" class="text-cyan-200 mt-2"></h3>
+            <p id="progression-description"></p><p>Wie hat sich die letzte Einheit angefühlt?</p>
+            <fieldset class="effort-control"><legend class="sr-only">Letzte Belastung</legend>
+                <label><input type="radio" name="progression-effort" value="light" onchange="updateProgressionChoice()"><span>Leicht</span></label>
+                <label><input type="radio" name="progression-effort" value="okay" onchange="updateProgressionChoice()"><span>Passend</span></label>
+                <label><input type="radio" name="progression-effort" value="hard" onchange="updateProgressionChoice()"><span>Schwer</span></label>
+            </fieldset>
+            <label for="progression-weight" class="block text-center text-sm text-slate-400 mt-4">Neues Arbeitsgewicht (kg)</label>
+            <div class="stepper-capsule"><button type="button" class="stepper-btn" onclick="adjustProgressionWeight(-1)" aria-label="Gewicht verringern">−</button><input id="progression-weight" type="number" inputmode="decimal" step="0.5" min="0" class="stepper-input" oninput="updateProgressionChoice()"><button type="button" class="stepper-btn" onclick="adjustProgressionWeight(1)" aria-label="Gewicht erhöhen">+</button></div>
+            <p id="progression-guidance"></p><div class="progression-actions"><button id="progression-decline" type="button" class="sys-btn" onclick="resolveProgressionOffer(false)">Nein · gleich lassen</button><button id="progression-accept" type="button" onclick="resolveProgressionOffer(true)" disabled>Ja!</button></div>
+        </div>
+    </div>
     <!-- MAIN CONTENT CONTAINER -->
     <main class="max-w-lg mx-auto px-3.5 pt-4 space-y-4">
 
@@ -681,6 +734,12 @@
             <div id="daily-quest-completed" class="daily-quest-completed" hidden role="status" aria-live="polite">
                 <div class="daily-completed-seal" aria-hidden="true">✓</div>
                 <h1>Tägliche Quest Abgeschlossen</h1>
+            </div>
+            <button id="recovery-day-toggle" type="button" onclick="chooseRecoveryDay(true)" class="recovery-toggle">Heute ist mein Ruhetag · Erholungsquests wählen</button>
+            <div id="recovery-day-panel" class="system-box p-4" hidden>
+                <h2 class="font-orbitron">Erholung &amp; Ausgleich</h2><p class="text-sm text-slate-400 mt-2">Wähle frei, was dir heute guttut. Alles ist optional. Dein nächster Trainingstag bleibt unverändert.</p>
+                <div id="recovery-quest-list"></div>
+                <button type="button" class="training-save-button mt-4" onclick="chooseRecoveryDay(false)">Zurück zum Trainingsplan</button>
             </div>
             <div id="quest-workout-content" class="space-y-4">
             
@@ -726,7 +785,7 @@
             </div>
 
             <!-- PHASE 1: CROSSTRAINER WARM-UP QUEST -->
-            <div id="warmup-card" class="system-box p-4 transition-all">
+            <details id="warmup-card" class="system-box p-4 transition-all"><summary class="warmup-overview">Aufwärmen <small>OPTIONAL · +5 EP</small></summary><div class="warmup-detail-body">
                 <div class="flex items-center justify-between mb-2.5">
                     <div class="flex items-center gap-2">
                         <span class="w-6 h-6 rounded bg-cyan-500/20 border border-cyan-400 flex items-center justify-center text-cyan-300 text-xs font-bold font-orbitron">
@@ -734,7 +793,7 @@
                         </span>
                         <div>
                             <span class="text-[10px] font-mono-tech text-cyan-400 uppercase tracking-wider block">
-                                Aufwärmen (+50 XP)
+                                Optionales Aufwärmen (+5 EP)
                             </span>
                             <h2 class="font-orbitron text-base font-bold text-white">
                                 CROSSTRAINER
@@ -784,11 +843,11 @@
                             </div>
                         </div>
                         <div class="text-[11px] text-cyan-300/80 font-mono-tech">
-                            <i class="fa-solid fa-heart-pulse mr-1 text-rose-400"></i>Zielpuls: ~120-135 BPM (Gelenke mobilisieren)
+                            <i class="fa-solid fa-heart-pulse mr-1 text-rose-400"></i>Locker nach deinem persönlichen Empfinden aufwärmen.
                         </div>
                     </div>
                 </div>
-            </div>
+            </div></details>
 
             <!-- PHASE 2: MAIN EXERCISES HEADER -->
             <div class="flex items-center justify-between pt-1 px-1">
@@ -810,8 +869,9 @@
 
             <!-- COMPLETE DAILY WORKOUT BUTTON -->
             <div class="pt-2 pb-4 space-y-2.5">
+                <button id="training-save-button" type="button" onclick="endWorkoutSession()" class="training-save-button" disabled>Training beenden &amp; speichern</button>
                 <button id="quest-finish-button" type="button" onclick="finishWorkoutSession()" class="quest-finish-btn w-full py-3.5 px-4 font-bold uppercase" disabled>
-                    <span>QUEST ABSCHLIESSEN</span>
+                    <span>BONUS-QUEST ABSCHLIESSEN</span>
                     <span class="quest-finish-reward">+150 EP</span>
                 </button>
 
@@ -1684,6 +1744,7 @@
             appState.history = appState.history || [];
             appState.bodyweightLogs = appState.bodyweightLogs || [];
             migrateExercisePreferencesV13();
+            ensureTrainingFlowState();
         }
         function snapshotTrainingSession() {
             if (!appState.planSessions) return;
@@ -1707,6 +1768,8 @@
             select.value = appState.trainingDay;
         }
         function activateTrainingSession(planId, dayId) {
+            archiveUnfinishedTraining();
+            advanceDailyQuest();
             if (isDailyQuestCompleted()) return;
             snapshotTrainingSession();
             appState.trainingPlan = planId;
@@ -1714,6 +1777,8 @@
             const saved = appState.planSessions[`${planId}:${dayId}`];
             appState.exercises = saved ? cloneTrainingValue(saved.exercises) : buildTrainingDay(planId, dayId);
             appState.warmup = saved ? cloneTrainingValue(saved.warmup) : { ...appState.warmup, completed: false };
+            applyRememberedExerciseWeights(appState.exercises);
+            expandedExerciseCards.clear();
             resetWarmupTimer();
             if (typeof stopRestTimer === 'function') stopRestTimer();
             saveState();
@@ -1864,7 +1929,9 @@
             appState.trainingDay = pending.dayId;
             const saved = appState.planSessions[`${pending.planId}:${pending.dayId}`];
             appState.exercises = saved ? cloneTrainingValue(saved.exercises) : buildTrainingDay(pending.planId, pending.dayId);
-            appState.exercises.forEach(ex => ex.sets.forEach(set => { set.done = false; }));
+            appState.exercises.forEach(ex => { ex.sets.forEach(set => { set.done = false;set.isPersonalBest=false;set.weightManuallyEdited=false; }); delete ex.effort; });
+            applyRememberedExerciseWeights(appState.exercises);
+            expandedExerciseCards.clear();
             appState.warmup = saved ? cloneTrainingValue(saved.warmup) : { ...appState.warmup };
             appState.warmup.completed = false;
             appState.dailyQuest.pending = null;
@@ -1875,13 +1942,20 @@
         }
         function renderDailyQuest() {
             const done = isDailyQuestCompleted();
-            document.getElementById('quest-workout-content').hidden = done;
+            const recovery = !done && isRecoveryDay();
+            document.getElementById('quest-workout-content').hidden = done || recovery;
+            document.getElementById('recovery-day-toggle').hidden = done || recovery;
+            document.getElementById('recovery-day-panel').hidden = !recovery;
+            if (recovery) renderRecoveryQuests();
+            document.getElementById('daily-quest-completed').querySelector('h1').textContent = appState.dailyQuest?.bonusClaimed === false ? 'Training für heute gespeichert' : 'Tägliche Quest Abgeschlossen';
             document.getElementById('daily-quest-completed').hidden = !done;
-            document.getElementById('header-rest-bar').hidden = done;
-            if (done) document.getElementById('header-quest-pct').textContent = '100%';
+            document.getElementById('header-rest-bar').hidden = done || recovery;
+            if (done) document.getElementById('header-quest-pct').textContent = appState.dailyQuest.bonusClaimed === false ? `${appState.dailyQuest.percent || 0}%` : '100%';
         }
         function refreshTrainingDate() {
-            if (advanceDailyQuest()) renderAll();
+            const archived = archiveUnfinishedTraining();
+            const advanced = advanceDailyQuest();
+            if (archived || advanced || lastRenderedTrainingDate !== localTrainingDate()) renderAll();
         }
 
         let appState = {
@@ -2288,8 +2362,9 @@
             appState.warmup.completed = !appState.warmup.completed;
             if (appState.warmup.completed) {
                 playSystemSound('set');
-                appState.player.stats.agi += 1;
-                awardXP(50, `Crosstrainer (${appState.warmup.minutes} Min. / Stufe ${appState.warmup.level})`);
+                markActiveWorkout();
+                const date = localTrainingDate();
+                if (!appState.warmupRewardDays[date]) { appState.warmupRewardDays[date] = true; awardXP(5, 'Optionales Aufwärmen'); }
             }
             saveState();
             renderWarmupUI();
@@ -2299,6 +2374,169 @@
         /* ==============================================================
            PHASE 2: EXERCISES & SETS RENDERING
            ============================================================== */
+        const expandedExerciseCards = new Set();
+        let currentProgressionOffer = null;
+        let lastRenderedTrainingDate = '';
+        const RECOVERY_QUESTS = [
+            {id:'read', label:'Ein Buch lesen', detail:'Zeit für ein Kapitel und einen ruhigen Kopf.'},
+            {id:'series', label:'Eine Serie schauen', detail:'Bewusst abschalten und entspannen.'},
+            {id:'friends', label:'Freunde treffen', detail:'Zeit mit Menschen, die dir guttun.'},
+            {id:'walk', label:'Locker spazieren gehen', detail:'Ohne Leistungsziel etwas nach draußen.'},
+            {id:'rest', label:'Eine Ruhepause nehmen', detail:'Musik, Meditation oder einfach nichts tun.'},
+            {id:'sleep', label:'Zeitig zur Ruhe kommen', detail:'Heute einen entspannten Abend einplanen.'}
+        ];
+        function ensureTrainingFlowState() {
+            appState.progressionOffers ||= {};
+            appState.exerciseWeights ||= {};
+            appState.warmupRewardDays ||= {};
+            appState.recoveryDays ||= {};
+            if (!appState.trainingFlowRevision) {
+                if (!isDailyQuestCompleted() && appState.exercises.some(ex=>ex.sets.some(set=>set.done))) markActiveWorkout();
+                appState.trainingFlowRevision=14;
+            }
+        }
+        function markActiveWorkout() {
+            if (!appState.activeWorkoutDate) {
+                appState.activeWorkoutDate = localTrainingDate();
+                appState.activeWorkoutStartedAt = new Date().toISOString();
+            }
+        }
+        function inheritNextSetWeight(exIndex, setIndex) {
+            const exercise = appState.exercises[exIndex], current = exercise.sets[setIndex];
+            const next = exercise.sets[setIndex + 1];
+            if (next && !next.done && !next.weightManuallyEdited) next.weight = current.weight;
+        }
+        function applyRememberedExerciseWeights(exercises) {
+            for (const exercise of exercises) {
+                const remembered = appState.exerciseWeights?.[exercise.name];
+                if (typeof remembered !== 'number' || exercise.sets.some(set => set.done)) continue;
+                exercise.sets.forEach(set => { if (!set.weightManuallyEdited) set.weight = remembered; });
+            }
+        }
+        function renderEffortControl(exercise, index) {
+            return `<fieldset class="effort-control"><legend>Wie war die Belastung? <span>(optional)</span></legend>${[['light','Leicht'],['okay','Passend'],['hard','Schwer']].map(([value,label]) => `<label><input type="radio" name="effort-${index}" value="${value}" ${exercise.effort===value?'checked':''} onchange="setExerciseEffort(${index}, '${value}')"><span>${label}</span></label>`).join('')}</fieldset>`;
+        }
+        function setExerciseEffort(index, effort) {
+            if (!['light','okay','hard'].includes(effort)) return;
+            appState.exercises[index].effort = effort;
+            saveState();
+        }
+        function queueProgressionOffers(sessionDate) {
+            ensureTrainingFlowState();
+            appState.exercises.forEach(exercise => {
+                const sets = exercise.sets;
+                if (exercise.effort === 'hard') { delete appState.progressionOffers[exercise.name]; return; }
+                if (sets.length < 3 || !sets.every(set => set.done && set.reps >= 12 && set.weight > 0 && set.weight === sets[0].weight)) return;
+                const weight = sets[0].weight;
+                const step = weight >= 40 ? 2.5 : weight >= 15 ? 1 : .5;
+                appState.progressionOffers[exercise.name] = {date:sessionDate, weight, step, effort:exercise.effort || '', reps:sets.map(set=>set.reps)};
+            });
+        }
+        function maybeOpenProgressionOffer(exercise) {
+            const offer = appState.progressionOffers?.[exercise.name];
+            if (!offer || offer.date >= localTrainingDate() || currentProgressionOffer || exercise.sets.some(set=>set.done)) return;
+            currentProgressionOffer = {name:exercise.name, id:exercise.id, planId:appState.trainingPlan, dayId:appState.trainingDay, ...offer};
+            document.getElementById('progression-name').textContent = exercise.name;
+            document.getElementById('progression-description').textContent = `Zuletzt ${offer.reps.length} Sätze mit mindestens 12 Wiederholungen bei ${offer.weight} kg. Möchtest du die Last vorsichtig erhöhen?`;
+            document.getElementById('progression-weight').value = Math.round((offer.weight+offer.step)*10)/10;
+            document.querySelectorAll('input[name="progression-effort"]').forEach(input=>{input.checked=input.value===offer.effort;});
+            updateProgressionChoice();
+            document.getElementById('progression-modal').classList.remove('hidden');
+            syncProgressionDialogViewport();
+            document.getElementById('progression-decline').focus({preventScroll:true});
+        }
+        function syncProgressionDialogViewport() {
+            const viewport=window.visualViewport;
+            if (!currentProgressionOffer || !viewport) return;
+            const modal=document.getElementById('progression-modal');
+            modal.style.top=`${viewport.offsetTop}px`;modal.style.height=`${viewport.height}px`;modal.style.bottom='auto';
+            const input=document.getElementById('progression-weight');
+            if (document.activeElement===input) window.requestAnimationFrame(()=>{
+                const field=input.getBoundingClientRect(),bounds=modal.getBoundingClientRect();
+                if (field.bottom>bounds.bottom-24 || field.top<bounds.top+80) modal.scrollTop=Math.max(0,modal.scrollTop+field.top-bounds.top-90);
+            });
+        }
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize',syncProgressionDialogViewport);
+            window.visualViewport.addEventListener('scroll',syncProgressionDialogViewport);
+        }
+        function adjustProgressionWeight(direction) {
+            if (!currentProgressionOffer) return;
+            const input=document.getElementById('progression-weight');
+            input.value=Math.max(0,Math.round(((parseFloat(input.value)||0)+direction*currentProgressionOffer.step)*10)/10);
+            updateProgressionChoice();
+        }
+        function updateProgressionChoice() {
+            const effort=document.querySelector('input[name="progression-effort"]:checked')?.value;
+            const weight=parseFloat(document.getElementById('progression-weight').value);
+            document.getElementById('progression-accept').disabled=!currentProgressionOffer || !['light','okay'].includes(effort) || !(weight>currentProgressionOffer.weight);
+            document.getElementById('progression-guidance').textContent=effort==='hard' ? 'Bei schwerer Belastung bleibt das Gewicht besser unverändert. Wähle „Nein“ und sammle weitere saubere Wiederholungen.' : 'Nur erhöhen, wenn die Wiederholungen sauber und kontrolliert waren. Passe den Vorschlag an die kleinste verfügbare Gewichtsstufe an.';
+        }
+        function resolveProgressionOffer(accept) {
+            const offer=currentProgressionOffer;
+            if (!offer) return;
+            if (accept && document.getElementById('progression-accept').disabled) return;
+            const exercise=appState.exercises.find(item=>item.id===offer.id && item.name===offer.name);
+            if (exercise && offer.planId===appState.trainingPlan && offer.dayId===appState.trainingDay && !isDailyQuestCompleted()) {
+                if (accept) {
+                    const weight=parseFloat(document.getElementById('progression-weight').value);
+                    exercise.sets.forEach(set=>{if(!set.done){set.weight=weight;set.weightManuallyEdited=false;}});
+                    appState.exerciseWeights[exercise.name]=weight;
+                }
+                delete appState.progressionOffers[exercise.name];
+                saveState();
+            }
+            currentProgressionOffer=null;
+            document.getElementById('progression-modal').classList.add('hidden');
+            renderExercises();
+        }
+        document.addEventListener('keydown', event=>{
+            if (!currentProgressionOffer) return;
+            if (event.key==='Escape') { event.preventDefault();resolveProgressionOffer(false); }
+            if (event.key==='Tab') {
+                const controls=[...document.getElementById('progression-modal').querySelectorAll('button,input')].filter(item=>!item.disabled);
+                const first=controls[0],last=controls[controls.length-1];
+                if (event.shiftKey && document.activeElement===first) {event.preventDefault();last.focus();}
+                else if (!event.shiftKey && document.activeElement===last) {event.preventDefault();first.focus();}
+            }
+        });
+        function isRecoveryDay() { return !!appState.recoveryDays?.[localTrainingDate()]?.active; }
+        function chooseRecoveryDay(active) {
+            ensureTrainingFlowState();
+            const date=localTrainingDate();
+            appState.recoveryDays[date] ||= {active:false,selected:[],completed:[]};
+            appState.recoveryDays[date].active=active;
+            if (active) { stopRestTimer(); resetWarmupTimer(); }
+            saveState();
+            renderAll();
+        }
+        function toggleRecoveryQuest(id, selected) {
+            if (!RECOVERY_QUESTS.some(quest=>quest.id===id)) return;
+            const day=appState.recoveryDays[localTrainingDate()];
+            if (!day?.active) return;
+            day.selected=selected ? [...new Set([...day.selected,id])] : day.selected.filter(item=>item!==id);
+            saveState();renderRecoveryQuests();
+        }
+        function completeRecoveryQuest(id) {
+            const day=appState.recoveryDays?.[localTrainingDate()];
+            if (!day?.active || !day.selected.includes(id) || day.completed.includes(id)) return;
+            day.completed.push(id);
+            awardXP(10,'Erholungs-Quest');
+            playSystemSound('set');
+            saveState();renderRecoveryQuests();
+        }
+        function renderRecoveryQuests() {
+            const day=appState.recoveryDays?.[localTrainingDate()] || {selected:[],completed:[]};
+            document.getElementById('recovery-quest-list').innerHTML=RECOVERY_QUESTS.map(quest=>`<div class="recovery-quest"><label><input type="checkbox" ${day.selected.includes(quest.id)?'checked':''} onchange="toggleRecoveryQuest('${quest.id}', this.checked)"><span><strong>${quest.label}</strong><small>${quest.detail}</small></span></label>${day.selected.includes(quest.id)?`<button type="button" class="sys-btn" onclick="completeRecoveryQuest('${quest.id}')" ${day.completed.includes(quest.id)?'disabled':''}>${day.completed.includes(quest.id)?'✓ Erledigt':'+10 EP · Erledigt'}</button>`:''}</div>`).join('');
+        }
+        function archiveUnfinishedTraining() {
+            if (!appState.activeWorkoutDate || appState.activeWorkoutDate===localTrainingDate()) return false;
+            if (calculateCurrentWorkoutMetrics().doneSets>0) finishWorkoutSession(false,true);
+            else { appState.activeWorkoutDate=null;appState.activeWorkoutStartedAt=null;appState.warmup.completed=false;saveState(); }
+            return true;
+        }
+        function endWorkoutSession() { finishWorkoutSession(false); }
+
         function renderExercises() {
             const container = document.getElementById('exercises-container');
             container.innerHTML = '';
@@ -2322,8 +2560,14 @@
                 const completedSets = ex.sets.filter(s => s.done).length;
                 const allDone = completedSets === ex.sets.length && ex.sets.length > 0;
 
-                const card = document.createElement('div');
-                card.className = `system-box p-3.5 transition-all ${allDone ? 'border-emerald-400/70' : ''}`;
+                const card = document.createElement('details');
+                const hasPR = ex.sets.some(set=>set.done && set.isPersonalBest);
+                card.open = expandedExerciseCards.has(ex.id);
+                card.ontoggle = () => {
+                    if (card.open) { expandedExerciseCards.add(ex.id); maybeOpenProgressionOffer(ex); }
+                    else expandedExerciseCards.delete(ex.id);
+                };
+                card.className = `system-box p-3.5 transition-all ${hasPR ? 'pr-card' : allDone ? 'border-emerald-400/70' : ''}`;
 
                 let setsHtml = '';
                 ex.sets.forEach((set, setIndex) => {
@@ -2332,10 +2576,10 @@
                     const weightDisplayValue = needsLoad ? '' : isBodyweight ? 'BW' : set.weight;
 
                     setsHtml += `
-                        <div class="set-row-grid p-1.5 rounded border transition-all ${set.done ? 'set-row-done border-emerald-500/50' : 'bg-slate-950/70 border-cyan-500/20'}">
+                        <div class="set-row-grid p-1.5 rounded border transition-all ${set.done ? (set.isPersonalBest ? 'set-row-pr' : 'set-row-done border-emerald-500/50') : 'bg-slate-950/70 border-cyan-500/20'}">
                             <!-- Set Number & Trash Icon -->
                             <div class="flex items-center justify-between pl-1 pr-0.5">
-                                <span class="text-xs font-orbitron font-bold ${set.done ? 'text-emerald-300' : 'text-cyan-300'}">
+                                <span class="text-xs font-orbitron font-bold ${set.done ? (set.isPersonalBest ? 'text-amber-200' : 'text-emerald-300') : 'text-cyan-300'}">
                                     #${setIndex + 1}
                                 </span>
                                 <button onclick="removeSpecificSet(${exIndex}, ${setIndex})" class="w-5 h-6 flex items-center justify-center text-slate-500 hover:text-rose-400 active:scale-90" title="Satz löschen">
@@ -2369,7 +2613,7 @@
                             <!-- Complete Set Button -->
                             <div class="flex justify-end">
                                 <button type="button" onclick="toggleSetDone(${exIndex}, ${setIndex})" 
-                                    class="w-[38px] h-[36px] rounded flex items-center justify-center border transition-all ${set.done ? 'bg-emerald-500/30 border-emerald-400 text-emerald-200 shadow-[0_0_10px_rgba(16,185,129,0.4)]' : 'bg-cyan-950/60 border-cyan-500/40 text-slate-400'}">
+                                    class="w-[38px] h-[36px] rounded flex items-center justify-center border transition-all ${set.done ? (set.isPersonalBest ? 'bg-amber-500/20 border-amber-300 text-amber-200' : 'bg-emerald-500/30 border-emerald-400 text-emerald-200') : 'bg-cyan-950/60 border-cyan-500/40 text-slate-400'}">
                                     <i class="fa-solid fa-check text-sm"></i>
                                 </button>
                             </div>
@@ -2378,28 +2622,15 @@
                 });
 
                 card.innerHTML = `
-                    <!-- Exercise Header -->
-                    <div class="flex items-start justify-between gap-2 mb-2">
-                        <div class="flex items-start gap-2.5">
-                            <span class="w-6 h-6 rounded bg-cyan-500/20 border border-cyan-400/70 flex items-center justify-center text-cyan-300 text-xs font-bold font-orbitron shrink-0 mt-0.5">
-                                ${exIndex + 1}
-                            </span>
-                            <div>
-                                <h3 class="font-orbitron text-sm sm:text-base font-bold text-white leading-snug">
-                                    ${ex.name}
-                                </h3>
-                                <div class="text-[11px] font-mono-tech text-cyan-300/80">
-                                    ${renderExerciseMuscleLinks(ex, exIndex)} <span class="muscle-target-reps">Ziel: ${escapeTrainingText(ex.targetReps)}</span>
-                                </div>
-                            </div>
+                    <summary class="exercise-overview">
+                        <div class="exercise-overview-main"><h3>${exIndex+1}. ${escapeTrainingText(ex.name)}</h3>
+                            <div class="text-xs">${renderExerciseMuscleLinks(ex,exIndex)}</div>
+                            ${hasPR ? '<span class="pr-flag">✧ NEUE BESTLEISTUNG</span>' : ''}
                         </div>
-                        <div class="text-right shrink-0">
-                            <span class="text-[10px] font-mono-tech px-2 py-0.5 rounded bg-purple-950/70 border border-purple-500/40 text-purple-300 block">
-                                Rekord: ${ex.lastRecord || 'Neu'}
-                            </span>
-                        </div>
-                    </div>
-
+                        <span class="exercise-count">${completedSets}/${ex.sets.length}</span>
+                    </summary>
+                    <div class="exercise-detail-body">
+                    <div class="text-xs text-slate-400 mb-2">Ziel: ${escapeTrainingText(ex.targetReps)}</div>
                     ${ex.note ? `<p class="text-[11px] text-slate-400 italic mb-2.5 pl-1 border-l-2 border-cyan-500/40">${ex.note}</p>` : ''}
 
                     <!-- Column Headers aligned with .set-row-grid -->
@@ -2424,8 +2655,12 @@
                             ${completedSets}/${ex.sets.length} Sätze
                         </span>
                     </div>
+                    </div>
                 `;
 
+                const effortBox = document.createElement('div');
+                effortBox.innerHTML = renderEffortControl(ex, exIndex);
+                card.querySelector('.exercise-detail-body').appendChild(effortBox);
                 container.appendChild(card);
             });
 
@@ -2451,17 +2686,20 @@
 
         function stepSetValue(exIndex, setIndex, field, delta) {
             const set = appState.exercises[exIndex].sets[setIndex];
+            set.isPersonalBest=false;
             if (field === 'weight') {
                 set.weight = Math.max(0, Math.round(((parseFloat(set.weight) || 0) + delta) * 10) / 10);
             } else {
                 set.reps = Math.max(1, (parseInt(set.reps) || 1) + delta);
             }
+            if (field === 'weight') { set.weightManuallyEdited = true; inheritNextSetWeight(exIndex, setIndex); }
             saveState();
             renderExercises();
         }
 
         function updateSetDirect(exIndex, setIndex, field, rawVal) {
             const set = appState.exercises[exIndex].sets[setIndex];
+            set.isPersonalBest=false;
             if (field === 'weight') {
                 const cleaned = String(rawVal).trim().toLowerCase().replace(',', '.');
                 if (cleaned === '' || cleaned === '0' || cleaned === 'bodyweight' || cleaned === 'bw') {
@@ -2470,6 +2708,8 @@
                     const num = parseFloat(cleaned);
                     set.weight = (!isNaN(num) && num >= 0) ? num : 0;
                 }
+                set.weightManuallyEdited = true;
+                inheritNextSetWeight(exIndex, setIndex);
                 saveState();
                 renderExercises();
                 return;
@@ -2485,38 +2725,28 @@
 
         function toggleSetDone(exIndex, setIndex) {
             if (isDailyQuestCompleted()) return;
-            const ex = appState.exercises[exIndex];
-            const set = ex.sets[setIndex];
-            if (!set.done && ex.loadUnselected && !(set.weight > 0)) {
-                showSystemToast('Bitte zuerst dein Arbeitsgewicht in kg eintragen.');
-                return;
-            }
-            set.done = !set.done;
-
+            const ex=appState.exercises[exIndex], set=ex.sets[setIndex];
+            if (!set.done && ex.loadUnselected && !(set.weight>0)) { showSystemToast('Bitte zuerst dein Arbeitsgewicht in kg eintragen.');return; }
+            set.done=!set.done;
             if (set.done) {
-                // Prüfen, ob alle Sätze dieser Übung abgeschlossen sind
-                const allSetsCompleted = ex.sets.every(s => s.done);
-
-                if (allSetsCompleted && ex.sets.length > 0) {
-                    // Seal the completed exercise with a low gong and rising bells.
-                    playSystemSound('questComplete');
-                    showSystemToast(`Übung gemeistert: ${ex.name}!`);
-                } else {
-                    // Short rune confirmation for an individual working set.
-                    playSystemSound('invite');
+                markActiveWorkout();
+                const previous=appState.records[ex.name];
+                const better=!previous || set.weight>previous.weight || (set.weight===previous.weight && set.reps>previous.reps);
+                if (better) {
+                    set.isPersonalBest=!!previous;
+                    appState.records[ex.name]={weight:set.weight,reps:set.reps,date:new Date().toLocaleDateString('de-DE')};
+                    ex.lastRecord=formatRecordLabel(set.weight,set.reps);
+                    if (set.isPersonalBest) showSystemToast('✧ Neue Bestleistung!');
                 }
-
-                const prevBest = appState.records[ex.name] || { weight: -1, reps: 0 };
-                if (set.weight > prevBest.weight || (set.weight === prevBest.weight && set.reps > prevBest.reps)) {
-                    appState.records[ex.name] = { weight: set.weight, reps: set.reps, date: new Date().toLocaleDateString('de-DE') };
-                    ex.lastRecord = formatRecordLabel(set.weight, set.reps);
-                }
-                awardXP(25, `${ex.name} (${formatWeightLabel(set.weight)} × ${set.reps})`);
+                appState.exerciseWeights[ex.name]=set.weight;
+                inheritNextSetWeight(exIndex,setIndex);
+                if (set.xpAwardedOn!==localTrainingDate()) { set.xpAwardedOn=localTrainingDate(); awardXP(25,ex.name); }
+                const allDone=ex.sets.every(item=>item.done);
+                playSystemSound(allDone?'questComplete':'invite');
+                if (allDone) expandedExerciseCards.delete(ex.id);
                 startRestTimer(defaultRestDuration);
             }
-
-            saveState();
-            renderExercises();
+            saveState();renderExercises();
         }
 
         function addSetToExercise(exIndex) {
@@ -2635,24 +2865,24 @@
                 });
             });
 
-            const warmupPoints = appState.warmup.completed ? 1 : 0;
-            const totalTasks = totalSets + 1;
-            const completedTasks = doneSets + warmupPoints;
+            const totalTasks = totalSets;
+            const completedTasks = doneSets;
             const pct = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-            const xpEarnedToday = (doneSets * 25) + (appState.warmup.completed ? 50 : 0);
+            const xpEarnedToday = (doneSets * 25) + (appState.warmupRewardDays?.[localTrainingDate()] ? 5 : 0);
 
             return { totalSets, doneSets, todayVolume: Math.round(todayVolume), pct, xpEarnedToday };
         }
 
         function canFinishWorkout(m = calculateCurrentWorkoutMetrics()) {
-            return !isDailyQuestCompleted() && m.totalSets > 0 && m.doneSets === m.totalSets && appState.warmup.completed;
+            return !isDailyQuestCompleted() && m.totalSets > 0 && m.doneSets === m.totalSets;
         }
 
         function renderWorkoutSummary() {
             const m = calculateCurrentWorkoutMetrics();
             const finishButton = document.getElementById('quest-finish-button');
             finishButton.disabled = !canFinishWorkout(m);
-            finishButton.title = finishButton.disabled ? 'Zuerst Aufwärmen und alle Arbeitssätze abhaken.' : 'Tägliche Quest abschließen';
+            finishButton.title = finishButton.disabled ? 'Bonus für alle Arbeitssätze. Aufwärmen ist optional.' : '150 Bonus-EP abholen';
+            document.getElementById('training-save-button').disabled = isDailyQuestCompleted() || m.doneSets === 0;
             document.getElementById('summary-sets').textContent = `${m.doneSets} / ${m.totalSets}`;
             document.getElementById('summary-volume').textContent = `${m.todayVolume.toLocaleString('de-DE')} kg`;
             document.getElementById('summary-xp').textContent = `+${m.xpEarnedToday} XP`;
@@ -2671,84 +2901,49 @@
             }
         }
 
-        function finishWorkoutSession() {
+        function finishWorkoutSession(claimBonus = true, automatic = false) {
             if (isDailyQuestCompleted()) return;
-            const m = calculateCurrentWorkoutMetrics();
-            if (!canFinishWorkout(m)) {
-                showSystemToast('Bitte zuerst das Aufwärmen und alle Arbeitssätze abhaken.');
+            const metrics=calculateCurrentWorkoutMetrics();
+            if (!metrics.doneSets || (claimBonus && !canFinishWorkout(metrics))) {
+                if (!automatic) showSystemToast(claimBonus ? 'Für die Bonus-Quest alle Arbeitssätze abhaken. Aufwärmen ist optional.' : 'Bitte mindestens einen Arbeitssatz protokollieren.');
                 return;
             }
-
-            // Record workout in history
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('de-DE', {
-                weekday: 'short',
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
+            ensureTrainingFlowState();
+            const sessionDate=automatic ? appState.activeWorkoutDate : localTrainingDate();
+            const date=automatic ? new Date(appState.activeWorkoutStartedAt || `${sessionDate}T12:00:00`) : new Date();
+            const dayLabel=getTrainingDayLabel();
+            queueProgressionOffers(sessionDate);
+            const details=appState.exercises.filter(ex=>ex.sets.some(set=>set.done)).map(ex=>{
+                const done=ex.sets.filter(set=>set.done);
+                const best=done.reduce((a,b)=>b.weight>a.weight?b:a,done[0]);
+                const topLabel=formatRecordLabel(best.weight,best.reps);
+                const record=appState.records[ex.name];
+                ex.lastRecord=record?formatRecordLabel(record.weight,record.reps):topLabel;
+                return `${ex.name}: ${done.length} Sätze (Top: ${topLabel})`;
             });
-
-            const performedExercises = [];
-            appState.exercises.forEach(ex => {
-                const done = ex.sets.filter(s => s.done);
-                if (done.length > 0) {
-                    const bestSet = done.reduce((a, b) => (b.weight > a.weight ? b : a), done[0]);
-                    const topLabel = formatRecordLabel(bestSet.weight, bestSet.reps);
-                    performedExercises.push(`${ex.name}: ${done.length} Sätze (Top: ${topLabel})`);
-                    ex.lastRecord = topLabel;
-                }
-            });
-
             appState.history.unshift({
-                id: Date.now(),
-                date: dateStr,
-                trainingPlan: TRAINING_PLANS[appState.trainingPlan].label,
-                trainingDay: getTrainingDayLabel(),
-                warmupDone: appState.warmup.completed,
-                warmupMinutes: appState.warmup.minutes,
-                warmupLevel: appState.warmup.level,
-                setsCompleted: m.doneSets,
-                volume: m.todayVolume,
-                details: performedExercises
+                id:Date.now(), date:date.toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),
+                localDate:sessionDate,trainingPlan:TRAINING_PLANS[appState.trainingPlan].label,trainingDay:dayLabel,
+                warmupDone:appState.warmup.completed,warmupMinutes:appState.warmup.minutes,warmupLevel:appState.warmup.level,
+                setsCompleted:metrics.doneSets,volume:metrics.todayVolume,details,bonusClaimed:claimBonus,
+                exercises:cloneTrainingValue(appState.exercises.filter(ex=>ex.sets.some(set=>set.done)))
             });
-
-            // Increase Player Permanent Stats
-            appState.player.workoutsCompleted += 1;
-            appState.player.lifetimeVolume += m.todayVolume;
-            appState.player.stats.str += 2;
-            appState.player.stats.vit += 2;
-            appState.player.stats.int += 1;
-
-            // Persist the daily completion before awarding rewards to prevent double submissions.
-            appState.dailyQuest = {
-                completedOn: localTrainingDate(),
-                pending: { planId: appState.trainingPlan, dayId: nextTrainingDay(appState.trainingPlan, appState.trainingDay) }
-            };
-
-            // Bonus Quest Clear XP
-            const clearBonusXP = 150;
-            awardXP(clearBonusXP, 'Tages-Quest Abschlussbonus');
-
-            // Reset checkmarks for next training day while keeping the updated weights
-            appState.warmup.completed = false;
-            appState.exercises.forEach(ex => ex.sets.forEach(s => (s.done = false)));
-            resetWarmupTimer();
-            stopRestTimer();
-            saveState();
-
-            playSystemSound('questClear');
-            openSystemModal(
-                'DUNGEON GECLEART!',
-                `Du hast ${getTrainingDayLabel()} abgeschlossen und im System-Logbuch archiviert.`,
-                `<div>• BEWEGTE GESAMTLAST: <strong>${m.todayVolume.toLocaleString('de-DE')} kg</strong></div>
-                 <div>• ABSOLVIERTE SÄTZE: <strong>${m.doneSets} Sätze</strong></div>
-                 <div>• QUEST-BELOHNUNG: <strong>+${clearBonusXP} Bonus-EXP</strong></div>
-                 <div>• STATUSWERTE: <strong>STR +2 | VIT +2 | INT +1</strong></div>`
-            );
-
-            renderAll();
+            appState.player.workoutsCompleted++;
+            appState.player.lifetimeVolume+=metrics.todayVolume;
+            appState.player.stats.str+=2;appState.player.stats.vit+=2;appState.player.stats.int++;
+            appState.dailyQuest={completedOn:sessionDate,bonusClaimed:claimBonus,percent:metrics.pct,pending:{planId:appState.trainingPlan,dayId:nextTrainingDay(appState.trainingPlan,appState.trainingDay)}};
+            appState.activeWorkoutDate=null;appState.activeWorkoutStartedAt=null;
+            if (claimBonus) awardXP(150,'Tages-Quest Abschlussbonus');
+            appState.warmup.completed=false;
+            appState.exercises.forEach(ex=>{ex.sets.forEach(set=>{set.done=false;set.isPersonalBest=false;set.weightManuallyEdited=false;});delete ex.effort;});
+            expandedExerciseCards.clear();
+            resetWarmupTimer();stopRestTimer();saveState();
+            if (!automatic) {
+                if (claimBonus) playSystemSound('questClear');
+                openSystemModal(claimBonus?'DUNGEON GECLEART!':'TRAINING GESPEICHERT',`${dayLabel} ist im Logbuch gespeichert.`,
+                    `<div>• ${metrics.doneSets} Arbeitssätze</div><div>• ${metrics.todayVolume.toLocaleString('de-DE')} kg bewegt</div><div>• ${claimBonus?'+150 Bonus-EP':'Ohne Questbonus – deine Satz-EP bleiben erhalten.'}</div>`);
+                renderAll();
+            }
         }
 
         function resetTodayCheckmarks() {
@@ -2874,7 +3069,7 @@
                         <span class="font-orbitron text-xs font-bold text-amber-300">${(item.volume || 0).toLocaleString('de-DE')} kg bewegt</span>
                     </div>
                     <div class="text-[11px] font-mono-tech text-emerald-300">
-                        ${escapeTrainingText(item.trainingDay || 'Training')} • ${item.warmupDone ? `✓ Crosstrainer (${item.warmupMinutes} Min. / Stufe ${item.warmupLevel})` : '• Ohne Aufwärm-Haken'} • ${item.setsCompleted} Sätze
+                        ${escapeTrainingText(item.trainingDay || 'Training')} ${item.warmupDone ? `• Optional aufgewärmt (${item.warmupMinutes} Min.)` : ''} • ${item.setsCompleted} Sätze
                     </div>
                     <div class="space-y-0.5 pt-1">
                         ${detailsHtml}
@@ -2919,7 +3114,7 @@
         function renderExerciseMuscleLinks(exercise, index) {
             const categories = getExerciseMuscleCategories(exercise);
             if (!categories.length) return escapeTrainingText(exercise.muscle || 'Eigene Übung');
-            return categories.map(category => `<button type="button" class="muscle-alternative-link" onclick="openMuscleAlternatives(${index}, '${category}')" aria-label="Alternative Übungen für ${category} anzeigen">${category} <span aria-hidden="true">↔</span></button>`).join(' ');
+            return categories.map(category => `<button type="button" class="muscle-alternative-link" onclick="event.preventDefault(); event.stopPropagation(); openMuscleAlternatives(${index}, '${category}')" aria-label="Alternative Übungen für ${category} anzeigen">${category} <span aria-hidden="true">↔</span></button>`).join(' ');
         }
         function isRemovedCalfExercise(exercise) {
             return /waden[\s-]*heben|calf.?rais/i.test(exercise.name || '');
@@ -3296,7 +3491,9 @@
         }
 
         function renderAll() {
+            archiveUnfinishedTraining();
             advanceDailyQuest();
+            lastRenderedTrainingDate = localTrainingDate();
             renderTrainingPlan();
             updateSoundUI();
             renderHeaderAndStats();
