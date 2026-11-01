@@ -473,6 +473,27 @@
         </div>
     </header>
 
+    <div id="training-setup-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="training-setup-title" style="background:#030712; overflow-y:auto; padding:calc(24px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); overscroll-behavior:contain;">
+        <form onsubmit="completeTrainingSetup(event)" class="system-box max-w-lg mx-auto p-5 space-y-4">
+            <p class="font-mono-tech text-cyan-300 text-xs">THE SYSTEM // DEIN TRAINING</p>
+            <h2 id="training-setup-title" class="font-orbitron text-xl text-white">Willkommen im System</h2>
+            <div id="training-name-field">
+                <label for="training-setup-name" class="block mb-2 text-cyan-200">Wie heißt du?</label>
+                <input id="training-setup-name" maxlength="40" autocomplete="given-name" placeholder="Dein Name" class="sys-input p-3 w-full text-left">
+            </div>
+            <fieldset class="space-y-3">
+                <legend class="mb-2 text-cyan-200">Wie möchtest du trainieren?</legend>
+                <label class="block border border-cyan-500/40 rounded p-3 cursor-pointer"><input type="radio" name="training-choice" value="fullbody" checked> <strong>Ganzkörper</strong><span class="block text-sm text-slate-300 mt-1">2–3 Tage pro Woche · A und B abwechselnd · ideal zum Einstieg</span></label>
+                <label class="block border border-cyan-500/40 rounded p-3 cursor-pointer"><input type="radio" name="training-choice" value="upperlower"> <strong>Oberkörper / Unterkörper</strong><span class="block text-sm text-slate-300 mt-1">4 Tage pro Woche · Oberkörper A / Unterkörper A / Oberkörper B / Unterkörper B</span></label>
+                <label class="block border border-cyan-500/40 rounded p-3 cursor-pointer"><input type="radio" name="training-choice" value="ppl"> <strong>Push / Pull / Beine</strong><span class="block text-sm text-slate-300 mt-1">Für Erfahrene mit 5–6 Trainingstagen · Push / Pull / Beine mit regelmäßigen Ruhetagen</span></label>
+            </fieldset>
+            <p class="text-sm text-slate-400">Deine Gewichte, angepassten Übungen und Satz-Haken werden je Trainingstag gespeichert. Chronik, Level und Rekorde bleiben beim Wechsel erhalten. Ein bisheriger Plan bleibt als eigener Trainingstag unter Ganzkörper verfügbar.</p>
+            <p id="training-setup-error" class="text-rose-300" role="alert"></p>
+            <button id="training-setup-submit" type="submit" class="sys-btn rounded p-3 w-full font-orbitron">SYSTEM STARTEN</button>
+            <button id="training-setup-cancel" type="button" onclick="closeTrainingSetup()" class="w-full text-slate-300 p-2">Abbrechen</button>
+        </form>
+    </div>
+
     <!-- MAIN CONTENT CONTAINER -->
     <main class="max-w-lg mx-auto px-3.5 pt-4 space-y-4">
 
@@ -485,13 +506,25 @@
             <div class="system-box p-4">
                 <div class="flex items-center justify-between gap-2 mb-3">
                     <h1 class="font-orbitron text-lg font-extrabold tracking-wide text-white text-glow-cyan">
-                        GANZKÖRPER-TRAINING
+                        <button type="button" onclick="openTrainingSetup(false)" class="text-left" aria-label="Trainingsplan ändern">
+                            <span id="training-plan-label">GANZKÖRPER</span> <span class="text-cyan-300">⌄</span>
+                        </button>
                     </h1>
                     <span id="quest-status-badge" class="text-[11px] font-mono-tech px-2 py-0.5 rounded bg-amber-500/20 border border-amber-400/50 text-amber-300">
                         UNVOLLENDET
                     </span>
                 </div>
 
+                <label for="training-day-select" class="block text-xs text-cyan-300 mb-1">TRAININGSTAG</label>
+                <select id="training-day-select" onchange="switchTrainingDay(this.value)" class="sys-input w-full p-2 mb-3 text-left" aria-label="Trainingstag auswählen"></select>
+                <p id="training-schedule" class="text-sm text-slate-300 mb-2"></p>
+                <details class="mb-3 text-sm text-slate-300">
+                    <summary class="text-cyan-300 cursor-pointer">So trainierst du mit diesem Plan</summary>
+                    <p class="mt-2">5–10 Minuten locker aufwärmen, dann vor der ersten schweren Übung 1–3 leichte Aufwärmsätze. Die angezeigten Sätze sind Arbeitssätze. Starte leicht und wähle dein Gewicht selbst: Am Satzende sollten noch 2–3 saubere Wiederholungen möglich sein. Bei einseitigen Übungen gelten die Wiederholungen je Seite.</p>
+                    <p class="mt-2">Pause: 2–3 Minuten bei großen Übungen, 60–120 Sekunden bei kleinen Übungen. Wenn du in allen Sätzen die obere Wiederholungszahl sauber erreichst, erhöhe beim nächsten Mal um die kleinste verfügbare Stufe. Beginne bei Bedarf mit 2 statt 3 Arbeitssätzen.</p>
+                    <p class="mt-2">Die Pläne sind ein allgemeiner Einstieg für gesunde Erwachsene im Fitnessstudio. Tausche Übungen passend zu Erfahrung, Ausstattung und Beschwerden. Trainiere nicht in Schmerzen hinein.</p>
+                    <a href="https://acsm.org/resistance-training-guidelines-update-2026/" target="_blank" rel="noopener noreferrer" class="text-cyan-300 underline">Trainingsgrundlage: ACSM 2026</a>
+                </details>
                 <!-- Workout Progress & Volume Row -->
                 <div class="grid grid-cols-3 gap-2 bg-slate-950/70 p-2.5 rounded border border-cyan-500/20 text-center">
                     <div>
@@ -1379,131 +1412,234 @@
             return w <= 0 ? `BW × ${reps}` : `${w} kg × ${reps}`;
         }
 
-        function getDefaultExercises() {
-            return [
-                {
-                    id: 'ex-legpress',
-                    name: 'Beinpresse (Maschine)',
-                    muscle: 'Beine & Gesäß • Gelenkschonend',
-                    targetReps: '10-12 Wdh.',
-                    note: 'Füße schulterbreit auf die Platte, Knie nicht komplett durchdrücken.',
-                    lastRecord: '80 kg × 12',
-                    sets: [
-                        { weight: 80, reps: 12, done: false },
-                        { weight: 80, reps: 12, done: false },
-                        { weight: 85, reps: 10, done: false }
-                    ]
-                },
-                {
-                    id: 'ex-chestpress',
-                    name: 'Brustpresse (Maschine)',
-                    muscle: 'Brust & vordere Schulter',
-                    targetReps: '10-12 Wdh.',
-                    note: 'Schulterblätter hinten zusammenziehen, kontrolliert ablassen.',
-                    lastRecord: '45 kg × 12',
-                    sets: [
-                        { weight: 45, reps: 12, done: false },
-                        { weight: 45, reps: 12, done: false },
-                        { weight: 50, reps: 10, done: false }
-                    ]
-                },
-                {
-                    id: 'ex-latpulldown',
-                    name: 'Latzug (Breiter Griff)',
-                    muscle: 'Breiter Rücken & Bizeps',
-                    targetReps: '10-12 Wdh.',
-                    note: 'Stange sauber zur oberen Brust ziehen, Ellbogen nach unten führen.',
-                    lastRecord: '45 kg × 12',
-                    sets: [
-                        { weight: 45, reps: 12, done: false },
-                        { weight: 45, reps: 12, done: false },
-                        { weight: 50, reps: 10, done: false }
-                    ]
-                },
-                {
-                    id: 'ex-seatedrow',
-                    name: 'Rudermaschine (Sitzend)',
-                    muscle: 'Oberer & mittlerer Rücken',
-                    targetReps: '10-12 Wdh.',
-                    note: 'Brust stolz herausstrecken, kurz am Endpunkt halten.',
-                    lastRecord: '40 kg × 12',
-                    sets: [
-                        { weight: 40, reps: 12, done: false },
-                        { weight: 40, reps: 12, done: false },
-                        { weight: 45, reps: 10, done: false }
-                    ]
-                },
-                {
-                    id: 'ex-shoulderpress',
-                    name: 'Schulterpresse (Maschine)',
-                    muscle: 'Schultern & Trizeps',
-                    targetReps: '10-12 Wdh.',
-                    note: 'Rücken fest am Polster lassen, kein Hohlkreuz bilden.',
-                    lastRecord: '30 kg × 12',
-                    sets: [
-                        { weight: 30, reps: 12, done: false },
-                        { weight: 30, reps: 12, done: false },
-                        { weight: 32.5, reps: 10, done: false }
-                    ]
-                },
-                {
-                    id: 'ex-legcurl',
-                    name: 'Beinbeuger (Sitzend/Liegend)',
-                    muscle: 'Hintere Oberschenkel (Hamstrings)',
-                    targetReps: '12-15 Wdh.',
-                    note: 'Langsame Rückbewegung für maximale Muskelspannung.',
-                    lastRecord: '35 kg × 12',
-                    sets: [
-                        { weight: 35, reps: 12, done: false },
-                        { weight: 35, reps: 12, done: false },
-                        { weight: 40, reps: 12, done: false }
-                    ]
-                },
-                {
-                    id: 'ex-triceps-rope',
-                    name: 'Trizepsdrücken am Seilzug (Seil)',
-                    muscle: 'Trizeps • Seitlicher & medialer Kopf',
-                    targetReps: '12-15 Wdh.',
-                    note: 'Ellbogen eng am Körper fixieren, unten das Seil aktiv nach außen spreizen.',
-                    lastRecord: '20 kg × 12',
-                    sets: [
-                        { weight: 20, reps: 12, done: false },
-                        { weight: 20, reps: 12, done: false },
-                        { weight: 22.5, reps: 12, done: false }
-                    ]
-                },
-                {
-                    id: 'ex-triceps-overhead',
-                    name: 'Überkopf-Trizepsdrücken am Seilzug',
-                    muscle: 'Trizeps • Fokus langer Kopf (Dehnung)',
-                    targetReps: '12-15 Wdh.',
-                    note: 'Mit dem Rücken zum Kabelzug leicht vorbeugen, Seil über den Kopf strecken und volle Dehnung mitnehmen.',
-                    lastRecord: '17.5 kg × 12',
-                    sets: [
-                        { weight: 17.5, reps: 12, done: false },
-                        { weight: 17.5, reps: 12, done: false },
-                        { weight: 20, reps: 12, done: false }
-                    ]
-                },
-                {
-                    id: 'ex-biceps-cable',
-                    name: 'Bizeps-Curls am Kabelzug (Stange / SZ-Griff)',
-                    muscle: 'Bizeps • Konstante Zugspannung',
-                    targetReps: '12-15 Wdh.',
-                    weight: 20,
-                    reps: 12,
-                    note: 'Oberarme eng am Rumpf fixieren, kein Schwung aus dem unteren Rücken holen.',
-                    lastRecord: '20 kg × 12',
-                    sets: [
-                        { weight: 20, reps: 12, done: false },
-                        { weight: 20, reps: 12, done: false },
-                        { weight: 22.5, reps: 12, done: false }
-                    ]
+        // Exercise rows: name, muscles, sets, minimum reps, maximum reps, cue.
+        const TRAINING_PLANS = {
+            fullbody: {
+                label: 'Ganzkörper-Training',
+                schedule: '2–3 Tage/Woche: A und B abwechseln, mindestens einen Ruhetag zwischen den Einheiten. Bei 3 Tagen: A/B/A, nächste Woche B/A/B.',
+                days: {
+                    a: { label: 'Ganzkörper A', exercises: [
+                        ['Beinpresse (Maschine)', 'Oberschenkel & Gesäß', 3, 8, 12, 'Kontrolliert absenken, Rücken am Polster halten.'],
+                        ['Brustpresse (Maschine)', 'Brust & Trizeps', 3, 8, 12, 'Griffe auf Brusthöhe, Schulterblätter stabil halten.'],
+                        ['Latzug (Neutralgriff)', 'Rücken & Bizeps', 3, 8, 12, 'Ellbogen nach unten führen, ohne Schwung ziehen.'],
+                        ['Beinbeuger (Sitzend)', 'Hintere Oberschenkel', 2, 10, 15, 'Becken am Polster lassen und langsam zurückführen.'],
+                        ['Seitheben (Kabelzug)', 'Seitliche Schulter', 2, 12, 20, 'Leicht gebeugte Arme, ohne Schwung bis etwa Schulterhöhe.'],
+                        ['Wadenheben (Maschine)', 'Waden', 2, 10, 20, 'Ferse kontrolliert absenken, oben kurz halten.'],
+                        ['Crunch (Maschine)', 'Bauch', 2, 10, 15, 'Rippen zum Becken bewegen, nicht an den Armen ziehen.']
+                    ] },
+                    b: { label: 'Ganzkörper B', exercises: [
+                        ['Rumänisches Kreuzheben (Kurzhanteln)', 'Hintere Oberschenkel & Gesäß', 3, 8, 12, 'Hüfte zurückschieben, Hanteln körpernah; Bewegung bei neutralem Rücken begrenzen.'],
+                        ['Hackenschmidt-Kniebeuge (Maschine)', 'Oberschenkel & Gesäß', 3, 8, 12, 'Schmerzfreie Tiefe wählen, Knie folgen den Fußspitzen.'],
+                        ['Schrägbank-Brustpresse (Maschine)', 'Brust & Trizeps', 3, 8, 12, 'Schulterblätter stabil und Rücken am Polster halten.'],
+                        ['Rudern (Brustgestützt)', 'Oberer Rücken & Bizeps', 3, 8, 12, 'Brust am Polster lassen, Ellbogen kontrolliert zurückführen.'],
+                        ['Reverse Fly (Maschine)', 'Hintere Schulter', 2, 12, 20, 'Arme leicht gebeugt, keine Schwungbewegung.'],
+                        ['Bizeps-Curls (Kabelzug)', 'Bizeps', 2, 10, 15, 'Oberarme ruhig halten und langsam absenken.'],
+                        ['Trizepsdrücken (Seilzug)', 'Trizeps', 2, 10, 15, 'Ellbogen am Körper halten, ohne Oberkörperschwung.']
+                    ] }
                 }
-            ];
+            },
+            upperlower: {
+                label: 'Oberkörper / Unterkörper',
+                schedule: '4 Tage/Woche, z. B. Mo Oberkörper A, Di Unterkörper A, Do Oberkörper B, Fr Unterkörper B. Dazwischen erholen.',
+                days: {
+                    a: { label: 'Oberkörper A', exercises: [
+                        ['Brustpresse (Maschine)', 'Brust & Trizeps', 3, 6, 10, 'Kontrolliert drücken, Schulterblätter stabil.'],
+                        ['Rudern (Brustgestützt)', 'Rücken & Bizeps', 3, 8, 12, 'Brust am Polster halten.'],
+                        ['Latzug (Neutralgriff)', 'Rücken & Bizeps', 3, 8, 12, 'Ohne Schwung zur oberen Brust ziehen.'],
+                        ['Schulterpresse (Maschine)', 'Schulter & Trizeps', 2, 8, 12, 'Rücken am Polster, kein starkes Hohlkreuz.'],
+                        ['Seitheben (Kabelzug)', 'Seitliche Schulter', 2, 12, 20, 'Leichtes Gewicht, ruhig anheben.'],
+                        ['Bizeps-Curls (Kabelzug)', 'Bizeps', 2, 10, 15, 'Oberarme ruhig halten.'],
+                        ['Trizepsdrücken (Seilzug)', 'Trizeps', 2, 10, 15, 'Ellbogen am Körper fixieren.']
+                    ] },
+                    b: { label: 'Unterkörper A', exercises: [
+                        ['Beinpresse (Maschine)', 'Oberschenkel & Gesäß', 3, 8, 12, 'Kontrollierte Tiefe, Rücken am Polster.'],
+                        ['Rumänisches Kreuzheben (Kurzhanteln)', 'Hintere Oberschenkel & Gesäß', 3, 8, 12, 'Hüfte nach hinten, Rücken neutral.'],
+                        ['Beinbeuger (Sitzend)', 'Hintere Oberschenkel', 2, 10, 15, 'Langsame Rückbewegung.'],
+                        ['Beinstrecker (Maschine)', 'Vordere Oberschenkel', 2, 10, 15, 'Gelenkachse zur Maschine ausrichten.'],
+                        ['Wadenheben (Maschine)', 'Waden', 3, 10, 20, 'Kontrolliert dehnen und anheben.'],
+                        ['Crunch (Maschine)', 'Bauch', 2, 10, 15, 'Rippen Richtung Becken einrollen.']
+                    ] },
+                    c: { label: 'Oberkörper B', exercises: [
+                        ['Schrägbank-Brustpresse (Maschine)', 'Brust & Trizeps', 3, 8, 12, 'Rücken am Polster, sauber drücken.'],
+                        ['Latzug (Neutralgriff)', 'Rücken & Bizeps', 3, 8, 12, 'Schultern nicht hochziehen.'],
+                        ['Rudern (Kabelzug)', 'Oberer Rücken & Bizeps', 3, 8, 12, 'Oberkörper ruhig halten.'],
+                        ['Butterfly (Maschine)', 'Brust', 2, 10, 15, 'Schmerzfreie Dehnung, langsam öffnen.'],
+                        ['Seitheben (Kabelzug)', 'Seitliche Schulter', 3, 12, 20, 'Ohne Schwung bis etwa Schulterhöhe.'],
+                        ['Reverse Fly (Maschine)', 'Hintere Schulter', 2, 12, 20, 'Kontrolliert öffnen und schließen.'],
+                        ['Bizeps-Curls (Kabelzug)', 'Bizeps', 2, 10, 15, 'Ellbogen ruhig halten.'],
+                        ['Überkopf-Trizepsdrücken (Kabelzug)', 'Trizeps', 2, 10, 15, 'Oberarme stabil, schmerzfreie Dehnung.']
+                    ] },
+                    d: { label: 'Unterkörper B', exercises: [
+                        ['Hackenschmidt-Kniebeuge (Maschine)', 'Oberschenkel & Gesäß', 3, 8, 12, 'Knie folgen den Fußspitzen.'],
+                        ['Hip Thrust (Maschine)', 'Gesäß', 3, 8, 12, 'Oben Hüfte strecken, nicht den Rücken überstrecken.'],
+                        ['Beinbeuger (Sitzend)', 'Hintere Oberschenkel', 3, 10, 15, 'Becken stabil am Polster.'],
+                        ['Beinstrecker (Maschine)', 'Vordere Oberschenkel', 2, 10, 15, 'Kontrolliert bewegen, nicht einrasten lassen.'],
+                        ['Wadenheben (Maschine)', 'Waden', 3, 10, 20, 'Unten kontrolliert absenken.'],
+                        ['Crunch (Maschine)', 'Bauch', 2, 10, 15, 'Bewegung aus dem Rumpf.']
+                    ] }
+                }
+            },
+            ppl: {
+                label: 'Push / Pull / Beine',
+                schedule: 'Für Erfahrene: Push / Pull / Beine / Pause / wiederholen (5–6 Einheiten/Woche). Bei nur 2–4 Trainingstagen ist Ganzkörper oder Ober-/Unterkörper meist praktischer.',
+                days: {
+                    a: { label: 'Push', exercises: [
+                        ['Brustpresse (Maschine)', 'Brust & Trizeps', 3, 6, 10, 'Schulterblätter stabil halten.'],
+                        ['Schrägbank-Brustpresse (Maschine)', 'Brust & Trizeps', 2, 8, 12, 'Kontrolliert absenken.'],
+                        ['Schulterpresse (Maschine)', 'Schulter & Trizeps', 2, 8, 12, 'Rücken fest am Polster.'],
+                        ['Seitheben (Kabelzug)', 'Seitliche Schulter', 3, 12, 20, 'Ohne Schwung anheben.'],
+                        ['Überkopf-Trizepsdrücken (Kabelzug)', 'Trizeps', 3, 10, 15, 'Oberarme stabil halten.']
+                    ] },
+                    b: { label: 'Pull', exercises: [
+                        ['Latzug (Neutralgriff)', 'Rücken & Bizeps', 3, 8, 12, 'Ellbogen nach unten ziehen.'],
+                        ['Rudern (Brustgestützt)', 'Oberer Rücken & Bizeps', 3, 8, 12, 'Brust am Polster lassen.'],
+                        ['Reverse Fly (Maschine)', 'Hintere Schulter', 3, 12, 20, 'Leicht gebeugte Arme, kein Schwung.'],
+                        ['Bizeps-Curls (Kabelzug)', 'Bizeps', 3, 10, 15, 'Oberarme ruhig halten.'],
+                        ['Hammer-Curls (Kurzhanteln)', 'Bizeps & Oberarmspeichenmuskel', 2, 10, 15, 'Handflächen zeigen zueinander, ohne Schwung.']
+                    ] },
+                    c: { label: 'Beine', exercises: [
+                        ['Beinpresse (Maschine)', 'Oberschenkel & Gesäß', 3, 8, 12, 'Rücken am Polster, kontrolliert absenken.'],
+                        ['Rumänisches Kreuzheben (Kurzhanteln)', 'Hintere Oberschenkel & Gesäß', 3, 8, 12, 'Hüfte zurück, Rücken neutral.'],
+                        ['Beinbeuger (Sitzend)', 'Hintere Oberschenkel', 2, 10, 15, 'Langsam zurückführen.'],
+                        ['Beinstrecker (Maschine)', 'Vordere Oberschenkel', 2, 10, 15, 'Gelenkachse passend einstellen.'],
+                        ['Wadenheben (Maschine)', 'Waden', 3, 10, 20, 'Volle kontrollierte Bewegung.'],
+                        ['Crunch (Maschine)', 'Bauch', 2, 10, 15, 'Rippen zum Becken einrollen.']
+                    ] }
+                }
+            }
+        };
+
+        function buildTrainingDay(planId, dayId) {
+            return TRAINING_PLANS[planId].days[dayId].exercises.map((row, i) => ({
+                id: `${planId}-${dayId}-${i}`, name: row[0], muscle: row[1],
+                targetReps: `${row[3]}–${row[4]} Wdh.`, note: row[5], lastRecord: '-',
+                // Zero is an unselected load, not a prescribed starting weight.
+                loadUnselected: true,
+                sets: Array.from({ length: row[2] }, () => ({ weight: 0, reps: row[3], done: false }))
+            }));
         }
+        function getDefaultExercises() { return buildTrainingDay('fullbody', 'a'); }
+        function cloneTrainingValue(value) { return JSON.parse(JSON.stringify(value)); }
+        function ensureTrainingState() {
+            if (!appState.planSessions || typeof appState.planSessions !== 'object' || Array.isArray(appState.planSessions)) appState.planSessions = {};
+            if (!TRAINING_PLANS[appState.trainingPlan]) appState.trainingPlan = 'fullbody';
+            const isLegacyDay = appState.trainingPlan === 'fullbody' && appState.trainingDay === 'legacy' && appState.planSessions['fullbody:legacy'];
+            if (!TRAINING_PLANS[appState.trainingPlan].days[appState.trainingDay] && !isLegacyDay) appState.trainingDay = 'a';
+            if (!appState.onboardingComplete && Array.isArray(appState.exercises) && appState.exercises.some(ex => !ex.loadUnselected)) {
+                if (!appState.planSessions['fullbody:legacy']) appState.planSessions['fullbody:legacy'] = {
+                    exercises: cloneTrainingValue(appState.exercises), warmup: cloneTrainingValue(appState.warmup)
+                };
+            }
+            appState.records = appState.records || {};
+            appState.history = appState.history || [];
+            appState.bodyweightLogs = appState.bodyweightLogs || [];
+        }
+        function snapshotTrainingSession() {
+            if (!appState.planSessions) return;
+            appState.planSessions[`${appState.trainingPlan}:${appState.trainingDay}`] = {
+                exercises: cloneTrainingValue(appState.exercises), warmup: cloneTrainingValue(appState.warmup)
+            };
+        }
+        function getTrainingDayLabel() {
+            return appState.trainingDay === 'legacy' ? 'Bisheriger Plan' : TRAINING_PLANS[appState.trainingPlan].days[appState.trainingDay].label;
+        }
+        function escapeTrainingText(value) {
+            return String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+        }
+        function renderTrainingPlan() {
+            const plan = TRAINING_PLANS[appState.trainingPlan];
+            document.getElementById('training-plan-label').textContent = plan.label.toUpperCase();
+            document.getElementById('training-schedule').textContent = plan.schedule;
+            const select = document.getElementById('training-day-select');
+            select.innerHTML = Object.entries(plan.days).map(([key, day]) => `<option value="${key}">${day.label}</option>`).join('');
+            if (appState.trainingPlan === 'fullbody' && appState.planSessions['fullbody:legacy']) select.innerHTML += '<option value="legacy">Bisheriger Plan (gesichert)</option>';
+            select.value = appState.trainingDay;
+        }
+        function activateTrainingSession(planId, dayId) {
+            snapshotTrainingSession();
+            appState.trainingPlan = planId;
+            appState.trainingDay = dayId;
+            const saved = appState.planSessions[`${planId}:${dayId}`];
+            appState.exercises = saved ? cloneTrainingValue(saved.exercises) : buildTrainingDay(planId, dayId);
+            appState.warmup = saved ? cloneTrainingValue(saved.warmup) : { ...appState.warmup, completed: false };
+            resetWarmupTimer();
+            if (typeof stopRestTimer === 'function') stopRestTimer();
+            saveState();
+            renderAll();
+        }
+        function switchTrainingDay(dayId) {
+            const plan = TRAINING_PLANS[appState.trainingPlan];
+            if (!plan.days[dayId] && !(dayId === 'legacy' && appState.trainingPlan === 'fullbody' && appState.planSessions['fullbody:legacy'])) return;
+            if (dayId !== appState.trainingDay) activateTrainingSession(appState.trainingPlan, dayId);
+        }
+        let trainingSetupIsInitial = false;
+        let trainingSetupPreviousFocus = null;
+        function openTrainingSetup(initial = false) {
+            trainingSetupIsInitial = initial;
+            trainingSetupPreviousFocus = document.activeElement;
+            const name = document.getElementById('training-setup-name');
+            name.value = appState.player.name === 'SUNG JIN-WOO' ? '' : appState.player.name;
+            name.required = initial;
+            document.getElementById('training-name-field').hidden = !initial;
+            document.querySelector(`input[name="training-choice"][value="${appState.trainingPlan}"]`).checked = true;
+            document.getElementById('training-setup-title').textContent = initial ? 'Willkommen im System' : 'Trainingsplan wählen';
+            document.getElementById('training-setup-submit').textContent = initial ? 'SYSTEM STARTEN' : 'PLAN ÜBERNEHMEN';
+            document.getElementById('training-setup-cancel').hidden = initial;
+            document.getElementById('training-setup-error').textContent = '';
+            document.getElementById('training-setup-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            (initial ? name : document.querySelector('input[name="training-choice"]:checked')).focus({ preventScroll: true });
+        }
+        function closeTrainingSetup() {
+            if (trainingSetupIsInitial) return;
+            document.getElementById('training-setup-modal').classList.add('hidden');
+            document.body.style.overflow = '';
+            if (trainingSetupPreviousFocus) trainingSetupPreviousFocus.focus({ preventScroll: true });
+        }
+        function completeTrainingSetup(event) {
+            event.preventDefault();
+            const name = document.getElementById('training-setup-name').value.trim();
+            if (trainingSetupIsInitial && !name) {
+                document.getElementById('training-setup-error').textContent = 'Bitte gib deinen Namen ein.';
+                return;
+            }
+            const planId = document.querySelector('input[name="training-choice"]:checked').value;
+            const firstSetup = trainingSetupIsInitial;
+            if (firstSetup) appState.player.name = name;
+            appState.onboardingComplete = true;
+            if (firstSetup) {
+                // Preserve the previous workout separately; start with the new template.
+                appState.trainingPlan = planId;
+                appState.trainingDay = 'a';
+                const saved = appState.planSessions[`${planId}:a`];
+                appState.exercises = saved ? cloneTrainingValue(saved.exercises) : buildTrainingDay(planId, 'a');
+                appState.warmup.completed = false;
+                resetWarmupTimer();
+                saveState();
+                renderAll();
+            } else if (planId !== appState.trainingPlan) activateTrainingSession(planId, 'a');
+            else saveState();
+            trainingSetupIsInitial = false;
+            closeTrainingSetup();
+        }
+        document.addEventListener('keydown', event => {
+            const modal = document.getElementById('training-setup-modal');
+            if (!modal || modal.classList.contains('hidden')) return;
+            if (event.key === 'Escape') { event.preventDefault(); closeTrainingSetup(); }
+            if (event.key === 'Tab') {
+                const items = [...modal.querySelectorAll('input, button, select, a[href]')].filter(el => !el.disabled && el.getClientRects().length);
+                const first = items[0], last = items[items.length - 1];
+                if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+                else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+            }
+        });
+
 
         let appState = {
+            onboardingComplete: false,
+            trainingPlan: 'fullbody',
+            trainingDay: 'a',
+            planSessions: {},
             player: {
                 name: 'SUNG JIN-WOO',
                 level: 1,
@@ -1781,11 +1917,13 @@
             } catch (e) {
                 console.error('Fehler beim Laden des System-Speichers:', e);
             }
+            ensureTrainingState();
             warmupRemainingSeconds = (appState.warmup.minutes || 10) * 60;
         }
 
         function saveState() {
             try {
+                snapshotTrainingSession();
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
             } catch (e) {
                 console.error('Fehler beim Speichern:', e);
@@ -1984,8 +2122,9 @@
 
                 let setsHtml = '';
                 ex.sets.forEach((set, setIndex) => {
-                    const isBodyweight = (parseFloat(set.weight) || 0) <= 0;
-                    const weightDisplayValue = isBodyweight ? 'BW' : set.weight;
+                    const needsLoad = ex.loadUnselected && (parseFloat(set.weight) || 0) <= 0;
+                    const isBodyweight = !needsLoad && (parseFloat(set.weight) || 0) <= 0;
+                    const weightDisplayValue = needsLoad ? '' : isBodyweight ? 'BW' : set.weight;
 
                     setsHtml += `
                         <div class="set-row-grid p-1.5 rounded border transition-all ${set.done ? 'set-row-done border-emerald-500/50' : 'bg-slate-950/70 border-cyan-500/20'}">
@@ -2002,8 +2141,9 @@
                             <!-- Weight Control Capsule (kg or BW when 0) -->
                             <div class="stepper-capsule">
                                 <button type="button" onclick="stepSetValue(${exIndex}, ${setIndex}, 'weight', -2.5)" class="stepper-btn" aria-label="Gewicht verringern">−</button>
-                                <input type="text" inputmode="decimal" value="${weightDisplayValue}" 
-                                    title="${isBodyweight ? 'Bodyweight (0 kg)' : set.weight + ' kg'}"
+                                <input type="text" inputmode="decimal" value="${weightDisplayValue}" placeholder="kg?"
+                                    aria-label="Gewicht in Kilogramm"
+                                    title="${needsLoad ? 'Eigenes Arbeitsgewicht eintragen' : isBodyweight ? 'Bodyweight (0 kg)' : set.weight + ' kg'}"
                                     onfocus="handleWeightFocus(this, ${exIndex}, ${setIndex})"
                                     onblur="handleWeightBlur(this, ${exIndex}, ${setIndex})"
                                     onchange="updateSetDirect(${exIndex}, ${setIndex}, 'weight', this.value)"
@@ -2141,6 +2281,10 @@
         function toggleSetDone(exIndex, setIndex) {
             const ex = appState.exercises[exIndex];
             const set = ex.sets[setIndex];
+            if (!set.done && ex.loadUnselected && !(set.weight > 0)) {
+                showSystemToast('Bitte zuerst dein Arbeitsgewicht in kg eintragen.');
+                return;
+            }
             set.done = !set.done;
 
             if (set.done) {
@@ -2347,6 +2491,8 @@
             appState.history.unshift({
                 id: Date.now(),
                 date: dateStr,
+                trainingPlan: TRAINING_PLANS[appState.trainingPlan].label,
+                trainingDay: getTrainingDayLabel(),
                 warmupDone: appState.warmup.completed,
                 warmupMinutes: appState.warmup.minutes,
                 warmupLevel: appState.warmup.level,
@@ -2375,7 +2521,7 @@
             playSystemSound('questClear');
             openSystemModal(
                 'DUNGEON GECLEART!',
-                'Du hast das Ganzkörper-Training erfolgreich abgeschlossen und im System-Logbuch archiviert.',
+                `Du hast ${getTrainingDayLabel()} abgeschlossen und im System-Logbuch archiviert.`,
                 `<div>• BEWEGTE GESAMTLAST: <strong>${m.todayVolume.toLocaleString('de-DE')} kg</strong></div>
                  <div>• ABSOLVIERTE SÄTZE: <strong>${m.doneSets} Sätze</strong></div>
                  <div>• QUEST-BELOHNUNG: <strong>+${clearBonusXP} Bonus-EXP</strong></div>
@@ -2394,10 +2540,14 @@
         }
 
         function restoreDefaultPlan() {
-            appState.exercises = getDefaultExercises();
+            if (!confirm('Aktuellen Trainingstag zurücksetzen? Eigene Änderungen und heutige Haken dieses Tages werden ersetzt. Chronik und Rekorde bleiben erhalten.')) return;
+            if (appState.trainingDay === 'legacy') appState.trainingDay = 'a';
+            appState.exercises = buildTrainingDay(appState.trainingPlan, appState.trainingDay);
+            appState.warmup.completed = false;
+            resetWarmupTimer();
             saveState();
             renderAll();
-            showSystemToast('Standard-Ganzkörperplan wiederhergestellt.');
+            showSystemToast('Aktueller Trainingstag wiederhergestellt.');
         }
 
         /* ==============================================================
@@ -2500,7 +2650,7 @@
                         <span class="font-orbitron text-xs font-bold text-amber-300">${(item.volume || 0).toLocaleString('de-DE')} kg bewegt</span>
                     </div>
                     <div class="text-[11px] font-mono-tech text-emerald-300">
-                        ${item.warmupDone ? `✓ Crosstrainer (${item.warmupMinutes} Min. / Stufe ${item.warmupLevel})` : '• Ohne Aufwärm-Haken'} • ${item.setsCompleted} Sätze
+                        ${escapeTrainingText(item.trainingDay || 'Training')} • ${item.warmupDone ? `✓ Crosstrainer (${item.warmupMinutes} Min. / Stufe ${item.warmupLevel})` : '• Ohne Aufwärm-Haken'} • ${item.setsCompleted} Sätze
                     </div>
                     <div class="space-y-0.5 pt-1">
                         ${detailsHtml}
@@ -2788,6 +2938,8 @@
                 const parsed = JSON.parse(raw);
                 if (parsed && parsed.player && parsed.exercises) {
                     appState = parsed;
+                    ensureTrainingState();
+                    resetWarmupTimer();
                     saveState();
                     renderAll();
                     closeImportModal();
@@ -2819,6 +2971,7 @@
         }
 
         function renderAll() {
+            renderTrainingPlan();
             updateSoundUI();
             renderHeaderAndStats();
             renderWarmupUI();
@@ -2829,6 +2982,7 @@
         window.onload = function () {
             loadState();
             renderAll();
+            if (!appState.onboardingComplete) openTrainingSetup(true);
         };
     </script>
 </body>
